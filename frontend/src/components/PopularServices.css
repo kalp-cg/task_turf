@@ -1,0 +1,54 @@
+/* PopularServices.css */
+
+#services {
+    font-family: 'Inter', sans-serif; /* Use a modern font */
+  }
+  
+  #services h3 {
+    position: relative;
+    display: inline-block;
+  }
+  
+  #services h3::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #4f46e5, #ec4899); /* Gradient underline */
+    border-radius: 4px;
+  }
+  
+  .service-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-transform: capitalize; /* Capitalize service names */
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #374151; /* Dark gray text for contrast */
+    transition: all 0.3s ease-in-out;
+    border: none !important; /* Explicitly remove borders */
+    background-color: transparent !important; /* Ensure no white background */
+  }
+  
+  .service-card:hover {
+    transform: translateY(-5px); /* Slight upward movement on hover */
+  }
+  
+  .service-card svg {
+    margin-bottom: 8px;
+    width: 40px;
+    height: 40px;
+    color: #4f46e5; /* Icon color */
+  }
+  
+  @media (max-width: 768px) {
+    .service-card {
+      width: 100%; /* Full width cards on smaller screens */
+      margin-bottom: 16px;
+    }
+  }
