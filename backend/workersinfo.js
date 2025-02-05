@@ -10,7 +10,6 @@ const uri = "mongodb+srv://kalppatelcodinggita:kalp5121@cluster0.uowgl.mongodb.n
 const dbName = "worker"; // Replace with your actual database name
 const collectionName = "workersinfo"; // Replace with your actual collection name
 
-
 app.use(cors());
 app.use(express.json());
 
