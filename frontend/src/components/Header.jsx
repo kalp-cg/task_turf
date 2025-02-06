@@ -7,7 +7,7 @@ const Header = () => {
       <h1 className="text-3xl font-extrabold text-white">Taskturf</h1>
       <nav className="space-x-6">
         <Link to="/services" className="text-white hover:text-yellow-300 transition duration-300">Services</Link>
-        <Link to="/how-it-works" className="text-white hover:text-yellow-300 transition duration-300">How it Works</Link>
+        <Link to="/howWork" className="text-white hover:text-yellow-300 transition duration-300">HowWork</Link>
         <Link to="/workers" className="text-white hover:text-yellow-300 transition duration-300">Workers</Link>
         <Link to="/about" className="text-white hover:text-yellow-300 transition duration-300">About Us</Link>
         <Link to="/contact" className="text-white hover:text-yellow-300 transition duration-300">Contact</Link>
