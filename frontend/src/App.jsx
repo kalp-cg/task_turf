@@ -157,6 +157,7 @@ import Gardening from "./pages/Gardening";
 import Cooking from "./pages/Cooking";
 import Painting from "./pages/Painting";
 import Contact from "./pages/Contact";
+import HowWork from "./components/HowWork";
 
 const App = () => {
   return (
@@ -166,6 +167,7 @@ const App = () => {
           {/* Define the Routes for different pages */}
           <Route path="/" element={<Home />} /> {/* Home Page */}
           <Route path="/workers" element={<WorkersPage />} /> {/* Workers Page */}
+          <Route path = "/HowWork" element = {<HowWork />} />
           <Route path="/login" element={<Login />} /> {/* Login Page */}
           <Route path="/register" element={<Register />} /> {/* Register Page */}
           <Route path="/cleaning" element={<Cleaning />} />
