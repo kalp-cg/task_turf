@@ -146,7 +146,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import WorkersPage from "./pages/WorkersPage"; // Import WorkersPage for workers route
+import WorkersPage from "./pages/WorkersPage"; 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Cleaning from "./pages/Cleaning";
@@ -164,12 +164,12 @@ const App = () => {
     <Router>
       <div className="min-h-screen">
         <Routes>
-          {/* Define the Routes for different pages */}
-          <Route path="/" element={<Home />} /> {/* Home Page */}
-          <Route path="/workers" element={<WorkersPage />} /> {/* Workers Page */}
+          
+          <Route path="/" element={<Home />} /> 
+          <Route path="/workers" element={<WorkersPage />} /> 
           <Route path = "/HowWork" element = {<HowWork />} />
-          <Route path="/login" element={<Login />} /> {/* Login Page */}
-          <Route path="/register" element={<Register />} /> {/* Register Page */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} /> 
           <Route path="/cleaning" element={<Cleaning />} />
           <Route path = "/plumbing" element = {<Plumbing />} />
           <Route path = "/electrical" element = {<Electrical />} />
