@@ -7,8 +7,8 @@ const port = 3000;
 
 // MongoDB connection details
 const uri = "mongodb+srv://kalppatelcodinggita:kalp5121@cluster0.uowgl.mongodb.net/";
-const dbName = "worker"; // Replace with your actual database name
-const collectionName = "workersinfo"; // Replace with your actual collection name
+const dbName = "worker"; 
+const collectionName = "workersinfo"; 
 
 app.use(cors());
 app.use(express.json());

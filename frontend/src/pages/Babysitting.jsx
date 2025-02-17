@@ -62,7 +62,7 @@ const Babysitting = () => {
               <p className="text-gray-700 mb-6">
                 Ideal for occasional babysitting needs, up to 3 hours.
               </p>
-              <p className="text-3xl font-bold mb-6">$30/session</p>
+              <p className="text-3xl font-bold mb-6">₹30/session</p>
               <button className="bg-pink-500 text-white px-6 py-3 rounded-md font-semibold hover:bg-pink-600 transition">
                 Choose Plan
               </button>
@@ -73,7 +73,7 @@ const Babysitting = () => {
               <p className="text-gray-700 mb-6">
                 Perfect for daily babysitting needs, up to 6 hours.
               </p>
-              <p className="text-3xl font-bold mb-6">$50/session</p>
+              <p className="text-3xl font-bold mb-6">₹50/session</p>
               <button className="bg-pink-500 text-white px-6 py-3 rounded-md font-semibold hover:bg-pink-600 transition">
                 Choose Plan
               </button>
@@ -84,7 +84,7 @@ const Babysitting = () => {
               <p className="text-gray-700 mb-6">
                 Full-day babysitting with meal preparation and activities.
               </p>
-              <p className="text-3xl font-bold mb-6">$80/session</p>
+              <p className="text-3xl font-bold mb-6">₹80/session</p>
               <button className="bg-pink-500 text-white px-6 py-3 rounded-md font-semibold hover:bg-pink-600 transition">
                 Choose Plan
               </button>
