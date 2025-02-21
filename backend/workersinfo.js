@@ -46,7 +46,7 @@ app.post('/workers', async (req, res) => {
             return res.status(400).json({ message: "Password and Confirm Password do not match"})
         }
 
-        // Transform request data to match the expected worker format
+            
         const newWorker = {
             name: `${firstname} ${lastname}`, // Combine firstname & lastname
             service: skill, // Map 'skill' to 'service'
