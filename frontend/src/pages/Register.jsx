@@ -34,7 +34,7 @@ const Register = () => {
       "skill":skills,
       "experience":"8 years",
       "password":password,
-      "confoirm_password":password
+      "confirm_password":password
       });
       console.log(registerRes.data);
 
