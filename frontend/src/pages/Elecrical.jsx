@@ -60,7 +60,7 @@ const Electrical = () => {
             <div className="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition">
               <h3 className="text-2xl font-semibold mb-4">Basic</h3>
               <p className="text-gray-700 mb-6">Ideal for small electrical repairs and troubleshooting.</p>
-              <p className="text-3xl font-bold mb-6">$60/service</p>
+              <p className="text-3xl font-bold mb-6">₹60/service</p>
               <ul className="text-gray-700 mb-6 space-y-2">
                 <li>✓ Outlet repair</li>
                 <li>✓ Switch replacement</li>
@@ -74,7 +74,7 @@ const Electrical = () => {
             <div className="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition">
               <h3 className="text-2xl font-semibold mb-4">Standard</h3>
               <p className="text-gray-700 mb-6">Perfect for panel upgrades and larger electrical needs.</p>
-              <p className="text-3xl font-bold mb-6">$100/service</p>
+              <p className="text-3xl font-bold mb-6">₹100/service</p>
               <ul className="text-gray-700 mb-6 space-y-2">
                 <li>✓ Everything in Basic</li>
                 <li>✓ Circuit breaker replacement</li>
@@ -88,7 +88,7 @@ const Electrical = () => {
             <div className="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition">
               <h3 className="text-2xl font-semibold mb-4">Premium</h3>
               <p className="text-gray-700 mb-6">Best for large-scale electrical projects and smart home automation.</p>
-              <p className="text-3xl font-bold mb-6">$150/service</p>
+              <p className="text-3xl font-bold mb-6">₹150/service</p>
               <ul className="text-gray-700 mb-6 space-y-2">
                 <li>✓ Everything in Standard</li>
                 <li>✓ Smart home wiring</li>

@@ -177,7 +177,7 @@ const Register = () => {
 
           <button
             type="submit"
-            className={`w-full py-3 rounded-md text-white ${isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 transition duration-300"}`}
+            className={`w-full py-3 rounded-md text-white ₹{isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 transition duration-300"}`}
             disabled={isLoading}
           >
             {isLoading ? "Registering..." : "Register"}

@@ -60,7 +60,7 @@ const Cooking = () => {
             <div className="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition">
               <h3 className="text-2xl font-semibold mb-4">Basic</h3>
               <p className="text-gray-700 mb-6">Ideal for beginners wanting to learn simple recipes.</p>
-              <p className="text-3xl font-bold mb-6">$50/session</p>
+              <p className="text-3xl font-bold mb-6">₹50/session</p>
               <ul className="text-gray-700 mb-6 space-y-2">
                 <li>✓ Basic cooking techniques</li>
                 <li>✓ Ingredient selection</li>
@@ -74,7 +74,7 @@ const Cooking = () => {
             <div className="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition">
               <h3 className="text-2xl font-semibold mb-4">Standard</h3>
               <p className="text-gray-700 mb-6">Best for home cooks looking to enhance their skills.</p>
-              <p className="text-3xl font-bold mb-6">$80/session</p>
+              <p className="text-3xl font-bold mb-6">₹80/session</p>
               <ul className="text-gray-700 mb-6 space-y-2">
                 <li>✓ Everything in Basic</li>
                 <li>✓ Intermediate recipes</li>
@@ -88,7 +88,7 @@ const Cooking = () => {
             <div className="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition">
               <h3 className="text-2xl font-semibold mb-4">Premium</h3>
               <p className="text-gray-700 mb-6">Perfect for aspiring chefs and gourmet enthusiasts.</p>
-              <p className="text-3xl font-bold mb-6">$120/session</p>
+              <p className="text-3xl font-bold mb-6">₹120/session</p>
               <ul className="text-gray-700 mb-6 space-y-2">
                 <li>✓ Everything in Standard</li>
                 <li>✓ Advanced techniques</li>
