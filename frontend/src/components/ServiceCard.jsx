@@ -10,3 +10,4 @@ const ServiceCard = ({ service }) => {
 };
 
 export default ServiceCard;
+  

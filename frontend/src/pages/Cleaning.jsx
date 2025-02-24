@@ -63,7 +63,7 @@ const Cleaning = () => {
             <div className="bg-white shadow-lg rounded-lg p-8 text-center">
               <h3 className="text-2xl font-semibold mb-4">Basic</h3>
               <p className="text-gray-600 mb-6">Perfect for small spaces like studios or small apartments.</p>
-              <p className="text-4xl font-bold mb-6">$50<span className="text-lg text-gray-600">/session</span></p>
+              <p className="text-4xl font-bold mb-6">₹50<span className="text-lg text-gray-600">/session</span></p>
               <ul className="text-left mb-6">
                 <li className="mb-2">✓ Dusting and wiping surfaces</li>
                 <li className="mb-2">✓ Vacuuming and mopping</li>
@@ -77,7 +77,7 @@ const Cleaning = () => {
             <div className="bg-white shadow-lg rounded-lg p-8 text-center border-2 border-blue-600">
               <h3 className="text-2xl font-semibold mb-4">Standard</h3>
               <p className="text-gray-600 mb-6">Ideal for medium-sized homes or small offices.</p>
-              <p className="text-4xl font-bold mb-6">$80<span className="text-lg text-gray-600">/session</span></p>
+              <p className="text-4xl font-bold mb-6">₹80<span className="text-lg text-gray-600">/session</span></p>
               <ul className="text-left mb-6">
                 <li className="mb-2">✓ Everything in Basic</li>
                 <li className="mb-2">✓ Kitchen deep cleaning</li>
@@ -91,7 +91,7 @@ const Cleaning = () => {
             <div className="bg-white shadow-lg rounded-lg p-8 text-center">
               <h3 className="text-2xl font-semibold mb-4">Premium</h3>
               <p className="text-gray-600 mb-6">Best for large spaces, offices, or recurring cleaning needs.</p>
-              <p className="text-4xl font-bold mb-6">$120<span className="text-lg text-gray-600">/session</span></p>
+              <p className="text-4xl font-bold mb-6">₹120<span className="text-lg text-gray-600">/session</span></p>
               <ul className="text-left mb-6">
                 <li className="mb-2">✓ Everything in Standard</li>
                 <li className="mb-2">✓ Carpet cleaning</li>

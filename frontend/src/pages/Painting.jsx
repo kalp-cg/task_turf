@@ -60,7 +60,7 @@ const Painting = () => {
             <div className="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition">
               <h3 className="text-2xl font-semibold mb-4">Basic</h3>
               <p className="text-gray-700 mb-6">Ideal for single-room painting projects.</p>
-              <p className="text-3xl font-bold mb-6">$100/room</p>
+              <p className="text-3xl font-bold mb-6">₹100/room</p>
               <ul className="text-gray-700 mb-6 space-y-2">
                 <li>✓ Wall painting</li>
                 <li>✓ Basic touch-ups</li>
@@ -74,7 +74,7 @@ const Painting = () => {
             <div className="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition">
               <h3 className="text-2xl font-semibold mb-4">Standard</h3>
               <p className="text-gray-700 mb-6">Perfect for multi-room or detailed projects.</p>
-              <p className="text-3xl font-bold mb-6">$300/project</p>
+              <p className="text-3xl font-bold mb-6">₹300/project</p>
               <ul className="text-gray-700 mb-6 space-y-2">
                 <li>✓ Everything in Basic</li>
                 <li>✓ Multiple color choices</li>
@@ -88,7 +88,7 @@ const Painting = () => {
             <div className="bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-xl transition">
               <h3 className="text-2xl font-semibold mb-4">Premium</h3>
               <p className="text-gray-700 mb-6">Best for full home makeovers and custom designs.</p>
-              <p className="text-3xl font-bold mb-6">$700/project</p>
+              <p className="text-3xl font-bold mb-6">₹700/project</p>
               <ul className="text-gray-700 mb-6 space-y-2">
                 <li>✓ Everything in Standard</li>
                 <li>✓ Custom designs & murals</li>
