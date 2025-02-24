@@ -16,16 +16,16 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setErrorMessage(""); // Reset error message on new attempt
+    setErrorMessage(""); 
 
-    // Basic validation for fieldshttp://localhost:3000/workers
+   
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
       setIsLoading(false);
       return;
     }
 
-    const registerRes = await axios.post("http://localhost:3000/workers", {
+    const registerRes = await axios.post("https://task-turf-3.onrender.com/workers", {
       "firstname":firstName,
       "lastname":lastName,
       "number":phoneNumber,
@@ -38,7 +38,7 @@ const Register = () => {
       });
       console.log(registerRes.data);
 
-    // Simulate a registration process (this can be replaced with an actual API call)
+    
     setTimeout(() => {
       if (email === "test@example.com") {
         setErrorMessage("This email is already taken.");
@@ -156,7 +156,7 @@ const Register = () => {
             />
           </div>
 
-          {/* Confirm Password */}
+          
           <div className="mb-6">
             <label htmlFor="confirmPassword" className="block text-gray-700 font-medium">Confirm Password</label>
             <input
@@ -170,7 +170,7 @@ const Register = () => {
             />
           </div>
 
-          {/* Error message */}
+          
           {errorMessage && (
             <div className="mb-4 text-red-600 text-center">{errorMessage}</div>
           )}

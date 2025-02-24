@@ -180,7 +180,7 @@ const WorkerHub = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/workers");
+      const res = await axios.get("https://task-turf-2.onrender.com/workers");
       setWorkers(res.data);
       mockWorkers = res.data;
     } catch (error) {
