@@ -34,28 +34,30 @@ async function initializeDatabase() {
     }
 }
 
-// **GET request to fetch all workers**
+// **POST request to add a worker**
 app.post('/workers', async (req, res) => {
     try {
-        const { firstname, lastname, number, email, address, skill, experience,password,confoirm_password } = req.body;
+        const { firstname, lastname, number, email, address, skill, experience, password, confirm_password } = req.body;
 
         // Validate all required fields
-        if (!firstname || !lastname || !number || !email || !address || !skill || !experience || !password || !confoirm_password) {
+        if (!firstname || !lastname || !number || !email || !address || !skill || !experience || !password || !confirm_password) {
             return res.status(400).json({ message: "All fields are required" });
-        } else if(password !== confoirm_password) {
-            return res.status(400).json({ message: "Password and Confirm Password do not match"})
+        } else if (password !== confirm_password) {
+            return res.status(400).json({ message: "Password and Confirm Password do not match" });
         }
 
-            
+        console.log("email")
+
         const newWorker = {
-            name: `${firstname} ${lastname}`, // Combine firstname & lastname
-            service: skill, // Map 'skill' to 'service'
-            charge: 600, // Set a default charge (you can modify this)
+            name: `${firstname} ${lastname}`,
+            email: email, 
+            phone: number, 
+            service: skill, 
+            charge: 600, 
             address: address,
-            ratings: 4.5, // Default rating (you can modify this)
-            description: `${experience} experience in ${skill}`, // Combine experience & skill
-            password:"pass@1234",
-            confoirm_password:"pass@1234"
+            ratings: 4.5, 
+            description: `${experience} years of experience in ${skill}`, 
+            password: password 
         };
 
         const result = await workerCollection.insertOne(newWorker);
@@ -66,6 +68,16 @@ app.post('/workers', async (req, res) => {
     }
 });
 
+
+
+app.get('/workers', async (req, res) => {
+    try {
+        const workers = await workerCollection.find({}).toArray();
+        res.status(200).json(workers);
+    } catch (err) {
+        res.status(500).json({ error: "Error fetching workers", message: err.message });
+    }
+});
 
 // Initialize the database and start the server
 initializeDatabase();

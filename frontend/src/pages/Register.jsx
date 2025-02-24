@@ -25,7 +25,9 @@ const Register = () => {
       return;
     }
 
-    const registerRes = await axios.post("https://task-turf-3.onrender.com/workers", {
+    // https://task-turf-3.onrender.com/workers
+
+    const registerRes = await axios.post("http://localhost:3000/workers", {
       "firstname":firstName,
       "lastname":lastName,
       "number":phoneNumber,
