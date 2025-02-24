@@ -207,6 +207,9 @@ app.get('/workers/:service/:location', async (req, res) => {
 });
 
 
+
+
+
 // Initialize the database and start the server
 initializeDatabase();
 
