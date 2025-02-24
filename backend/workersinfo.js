@@ -1,7 +1,6 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
-const bcrypt = require('bcryptjs'); // For password hashing
 
 const app = express();
 const port = 3000;
@@ -35,68 +34,38 @@ async function initializeDatabase() {
     }
 }
 
-// **Worker Registration (Sign Up)**
+// **GET request to fetch all workers**
 app.post('/workers', async (req, res) => {
     try {
-        const { firstname, lastname, number, email, address, skill, experience, password, confirm_password } = req.body;
+        const { firstname, lastname, number, email, address, skill, experience,password,confoirm_password } = req.body;
 
         // Validate all required fields
-        if (!firstname || !lastname || !number || !email || !address || !skill || !experience || !password || !confirm_password) {
+        if (!firstname || !lastname || !number || !email || !address || !skill || !experience || !password || !confoirm_password) {
             return res.status(400).json({ message: "All fields are required" });
-        } else if (password !== confirm_password) {
-            return res.status(400).json({ message: "Password and Confirm Password do not match" });
+        } else if(password !== confoirm_password) {
+            return res.status(400).json({ message: "Password and Confirm Password do not match"})
         }
 
-        // Check if the email already exists
-        const existingWorker = await workerCollection.findOne({ email });
-        if (existingWorker) {
-            return res.status(400).json({ message: "Email already registered. Please login." });
-        }
-
-        // Hash password before storing it
-        const hashedPassword = await bcrypt.hash(password, 10);
-
+            
         const newWorker = {
-            name: `${firstname} ${lastname}`, 
-            service: skill, 
-            charge: 600, 
+            name: `${firstname} ${lastname}`, // Combine firstname & lastname
+            service: skill, // Map 'skill' to 'service'
+            charge: 600, // Set a default charge (you can modify this)
             address: address,
-            ratings: 4.5, 
-            description: `${experience} experience in ${skill}`, 
-            email,
-            password: hashedPassword // Store hashed password
+            ratings: 4.5, // Default rating (you can modify this)
+            description: `${experience} experience in ${skill}`, // Combine experience & skill
+            password:"pass@1234",
+            confoirm_password:"pass@1234"
         };
 
         const result = await workerCollection.insertOne(newWorker);
 
-        res.status(201).json({ message: "Worker registered successfully", workerId: result.insertedId });
+        res.status(201).json({ message: "Worker added successfully", workerId: result.insertedId });
     } catch (err) {
         res.status(500).json({ error: "Error adding worker", message: err.message });
     }
 });
 
-// **Worker Login Route**
-app.post('/workers/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-
-        // Check if the worker exists
-        const worker = await workerCollection.findOne({ email });
-        if (!worker) {
-            return res.status(400).json({ message: "Worker not found. Please register." });
-        }
-
-        // Compare hashed password
-        const isMatch = await bcrypt.compare(password, worker.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Invalid email or password." });
-        }
-
-        res.status(200).json({ message: "Login successful", worker: { name: worker.name, service: worker.service } });
-    } catch (err) {
-        res.status(500).json({ error: "Error logging in", message: err.message });
-    }
-});
 
 // Initialize the database and start the server
 initializeDatabase();

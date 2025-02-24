@@ -16,9 +16,9 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setErrorMessage(""); 
+    setErrorMessage(""); // Reset error message on new attempt
 
-   
+    // Basic validation for fieldshttp://localhost:3000/workers
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
       setIsLoading(false);
@@ -34,19 +34,11 @@ const Register = () => {
       "skill":skills,
       "experience":"8 years",
       "password":password,
-      "confirm_password":password
+      "confoirm_password":password
       });
       console.log(registerRes.data);
 
     
-    setTimeout(() => {
-      if (email === "test@example.com") {
-        setErrorMessage("This email is already taken.");
-      } else {
-        alert("Registration Successful!");
-      }
-      setIsLoading(false);
-    }, 1500);
   };
 
   return (
@@ -177,7 +169,7 @@ const Register = () => {
 
           <button
             type="submit"
-            className={`w-full py-3 rounded-md text-white ₹{isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 transition duration-300"}`}
+            className={`w-full py-3 rounded-md text-white ${isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 transition duration-300"}`}
             disabled={isLoading}
           >
             {isLoading ? "Registering..." : "Register"}
