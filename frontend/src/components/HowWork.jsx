@@ -1,10 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const HowWork = () => {
+  const navigate = useNavigate();
+
+  const handleSignUpClick = () => {
+    navigate('/register'); // Redirect to the registration page
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen py-12">
+      {/* Header Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Title Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900">How TaskTurf Works</h1>
           <p className="mt-4 text-lg text-gray-600">
@@ -48,7 +55,7 @@ const HowWork = () => {
           </div>
         </div>
 
-        {/* Additional Details Section */}
+        {/* Why Choose TaskTurf Section */}
         <div className="mt-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900">Why Choose TaskTurf?</h2>
@@ -118,7 +125,10 @@ const HowWork = () => {
           <p className="mt-4 text-lg text-gray-600">
             Join TaskTurf today and experience the easiest way to get things done.
           </p>
-          <button className="mt-8 px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-300">
+          <button
+            onClick={handleSignUpClick}
+            className="mt-8 px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-300"
+          >
             Sign Up Now
           </button>
         </div>
