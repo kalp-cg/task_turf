@@ -1,10 +1,7 @@
-
-
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react"; // Import Auth0 hook
+import { useAuth0 } from "@auth0/auth0-react";
 
 // Mock worker data
 let mockWorkers = [];
@@ -18,13 +15,14 @@ const WorkerHub = () => {
     electrical: false,
     carpentry: false,
   });
+  const [cartItems, setCartItems] = useState([]); // State for cart items
 
-  const { isAuthenticated, loginWithRedirect } = useAuth0(); // Use Auth0 hook
-  const navigate = useNavigate(); // For navigation
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("https://task-turf-2.onrender.com/workers");
+      const res = await axios.get("http://localhost:3000/workers");
       setWorkers(res.data);
       mockWorkers = res.data;
     } catch (error) {
@@ -81,12 +79,24 @@ const WorkerHub = () => {
   };
 
   // Handle Connect Button Click
-  const handleConnectClick = () => {
+  const handleConnectClick = (worker) => {
     if (!isAuthenticated) {
       loginWithRedirect(); // Redirect to login page if not authenticated
     } else {
-      navigate("/cart"); // Navigate to cart page if authenticated
+      addToCart(worker); // Add worker to cart if authenticated
     }
+  };
+
+  // Add worker to cart
+  const addToCart = (worker) => {
+    if (!cartItems.some((item) => item.id === worker.id)) {
+      setCartItems([...cartItems, worker]);
+    }
+  };
+
+  // Remove worker from cart
+  const removeFromCart = (id) => {
+    setCartItems(cartItems.filter((item) => item.id !== id));
   };
 
   return (
@@ -94,12 +104,12 @@ const WorkerHub = () => {
       {/* Simplified Header */}
       <header className="bg-white shadow-md p-4 flex justify-between items-center">
         <h1 className="text-2xl font-semibold text-gray-800">WorkerHub</h1>
-        <button
-          onClick={handleConnectClick}
+        <Link
+          to="/cart"
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
         >
-          {isAuthenticated ? "Go to Cart" : "Login to Connect"}
-        </button>
+          Go to Cart ({cartItems.length})
+        </Link>
       </header>
 
       {/* Search Bar */}
@@ -183,7 +193,7 @@ const WorkerHub = () => {
                 <p className="text-sm text-gray-500">{worker.description}</p>
                 <p className="text-sm font-semibold text-blue-600">₹ {worker.charge}</p>
                 <button
-                  onClick={handleConnectClick}
+                  onClick={() => handleConnectClick(worker)}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg mt-4 hover:bg-blue-700 transition duration-300"
                 >
                   {isAuthenticated ? "Add to Cart" : "Login to Connect"}

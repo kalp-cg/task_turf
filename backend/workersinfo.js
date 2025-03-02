@@ -216,20 +216,30 @@ app.get("/api/profile", async (req, res) => {
 // Update profile
 app.put("/api/profile", async (req, res) => {
   try {
-    const { userId, ...updates } = req.body;
-    delete updates.password; // Prevent password updates here
-    const result = await workerCollection.updateOne(
-      { _id: new ObjectId(userId) },
-      { $set: updates }
-    );
+    const { userId, email, ...updates } = req.body;
+    delete updates.password; // Prevent password updates
+
+    let filter = {};
+    if (userId) {
+      filter = { _id: new ObjectId(userId) };
+    } else if (email) {
+      filter = { email };
+    } else {
+      return res.status(400).json({ message: "User identifier is missing." });
+    }
+
+    const result = await workerCollection.updateOne(filter, { $set: updates });
+
     if (result.matchedCount === 0) {
       return res.status(404).json({ message: "User not found" });
     }
+
     res.status(200).json({ message: "Profile updated successfully" });
   } catch (err) {
     res.status(500).json({ error: "Error updating profile", message: err.message });
   }
 });
+
 
 // Upload profile photo
 app.post("/api/profile/photo", upload.single("photo"), async (req, res) => {
