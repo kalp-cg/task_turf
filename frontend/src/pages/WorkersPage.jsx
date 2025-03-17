@@ -2,204 +2,273 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
-
-// Mock worker data
-let mockWorkers = [];
+import {
+  Search,
+  MapPin,
+  ShoppingCart,
+  Star,
+  XCircle,
+  ArrowRightCircle,
+  Briefcase,
+  CheckCircle,
+  Award,
+  Clock,
+} from "lucide-react";
+import Header from "../components/Header";
 
 const WorkerHub = () => {
-  const [workers, setWorkers] = useState(mockWorkers);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [location, setLocation] = useState("");
-  const [filters, setFilters] = useState({
-    plumbing: false,
-    electrical: false,
-    carpentry: false,
-  });
-  const [cartItems, setCartItems] = useState([]); // State for cart items
+  const [workers, setWorkers] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { isAuthenticated, loginWithRedirect } = useAuth0();
   const navigate = useNavigate();
 
-  const fetchData = async () => {
-    try {
-      const res = await axios.get("http://localhost:3000/workers");
-      setWorkers(res.data);
-      mockWorkers = res.data;
-    } catch (error) {
-      console.error("Error fetching workers:", error);
-    }
-  };
-
   useEffect(() => {
-    filterWorkers();
-  }, [filters, searchTerm, location]);
-
-  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/workers");
+        console.log("Backend Response:", res.data); // Log the response
+        setWorkers(res.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching workers:", error);
+        setIsLoading(false);
+      }
+    };
     fetchData();
   }, []);
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleLocationChange = (e) => {
-    setLocation(e.target.value);
-  };
-
-  const handleFilterChange = (e) => {
-    setFilters({
-      ...filters,
-      [e.target.id]: e.target.checked,
-    });
-  };
-
-  const filterWorkers = () => {
-    let filteredWorkers = mockWorkers;
-
-    if (searchTerm) {
-      filteredWorkers = filteredWorkers.filter((worker) =>
-        worker.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (location) {
-      filteredWorkers = filteredWorkers.filter((worker) =>
-        worker.location?.toLowerCase().includes(location.toLowerCase())
-      );
-    }
-
-    const activeFilters = Object.keys(filters).filter((key) => filters[key]);
-    if (activeFilters.length > 0) {
-      filteredWorkers = filteredWorkers.filter((worker) =>
-        activeFilters.includes(worker.category.toLowerCase())
-      );
-    }
-
-    setWorkers(filteredWorkers);
-  };
-
-  // Handle Connect Button Click
   const handleConnectClick = (worker) => {
     if (!isAuthenticated) {
-      loginWithRedirect(); // Redirect to login page if not authenticated
+      loginWithRedirect();
     } else {
-      addToCart(worker); // Add worker to cart if authenticated
+      addToCart(worker);
     }
   };
 
-  // Add worker to cart
   const addToCart = (worker) => {
     if (!cartItems.some((item) => item.id === worker.id)) {
       setCartItems([...cartItems, worker]);
     }
   };
 
-  // Remove worker from cart
-  const removeFromCart = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
-  };
-
   return (
-    <div className="bg-gray-50 min-h-screen">
-      {/* Simplified Header */}
-      <header className="bg-white shadow-md p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-gray-800">WorkerHub</h1>
-        <Link
-          to="/cart"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
-        >
-          Go to Cart ({cartItems.length})
-        </Link>
-      </header>
+    <div className="bg-gradient-to-b from-orange-50 to-white min-h-screen">
+      <Header cartCount={cartItems.length} />
 
-      {/* Search Bar */}
-      <div className="p-6 bg-white flex justify-center shadow-md mt-6 mx-8 rounded-md">
-        <input
-          type="text"
-          placeholder="Search for workers (e.g., Plumber, Electrician)"
-          className="border p-3 rounded-l-lg w-1/3 focus:outline-none focus:ring-4 focus:ring-blue-300"
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
-        <input
-          type="text"
-          placeholder="Location"
-          className="border p-3 w-1/4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
-          value={location}
-          onChange={handleLocationChange}
-        />
-        <button className="bg-blue-600 text-white px-6 py-3 rounded-r-lg hover:bg-blue-700 transition duration-300">
-          Search
-        </button>
-      </div>
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-r from-orange-500 to-amber-600 py-20">
+        <div className="absolute inset-0 bg-opacity-30 bg-gradient-to-b from-[#0D1B2A] to-[#1B263B]"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-5xl font-bold text-white mb-6 tracking-tight">
+            Expert Services at Your Fingertips
+          </h1>
+          <p className="text-xl text-orange-100 max-w-3xl mx-auto mb-10">
+            Connect with top-rated professionals for any job, big or small
+          </p>
 
-      {/* Main Content */}
-      <div className="container mx-auto p-6 flex gap-8">
-        {/* Filters Section */}
-        <div className="bg-white p-6 w-1/4 rounded-lg shadow-md">
-          <h2 className="font-semibold text-lg text-gray-800">Filters</h2>
-          <div className="mt-4">
-            <h3 className="text-sm text-gray-600">Category</h3>
-            <div className="mt-2">
-              <input
-                type="checkbox"
-                id="plumbing"
-                checked={filters.plumbing}
-                onChange={handleFilterChange}
-              />
-              <label htmlFor="plumbing" className="ml-2 text-sm text-gray-600">
-                Plumbing
-              </label>
+          {/* Stats */}
+          <div className="flex justify-center gap-8 mt-12 flex-wrap">
+            <div className="bg-white bg-opacity-20 backdrop-blur-lg px-6 py-4 rounded-lg text-gray-800">
+              <div className="text-3xl font-bold text-orange-500">10,000+</div>
+              <div className="text-sm text-gray-700">
+                Verified Professionals
+              </div>
             </div>
-            <div className="mt-2">
-              <input
-                type="checkbox"
-                id="electrical"
-                checked={filters.electrical}
-                onChange={handleFilterChange}
-              />
-              <label htmlFor="electrical" className="ml-2 text-sm text-gray-600">
-                Electrical
-              </label>
+            <div className="bg-white bg-opacity-20 backdrop-blur-lg px-6 py-4 rounded-lg text-gray-800">
+              <div className="text-3xl font-bold text-green-500">4.8/5</div>
+              <div className="text-sm text-gray-700">Average Rating</div>
             </div>
-            <div className="mt-2">
-              <input
-                type="checkbox"
-                id="carpentry"
-                checked={filters.carpentry}
-                onChange={handleFilterChange}
-              />
-              <label htmlFor="carpentry" className="ml-2 text-sm text-gray-600">
-                Carpentry
-              </label>
+            <div className="bg-white bg-opacity-20 backdrop-blur-lg px-6 py-4 rounded-lg text-gray-800">
+              <div className="text-3xl font-bold text-blue-500">24/7</div>
+              <div className="text-sm text-gray-700">Customer Support</div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Workers List */}
-        <div className="w-3/4">
-          <h2 className="font-semibold text-lg text-gray-800">
-            Available Workers ({workers.length})
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-16">
+        {/* Results Header */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">
+            Available Professionals
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-            {workers.map((worker) => (
+        </div>
+
+        {/* Results */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
               <div
-                key={worker.id}
-                className="bg-white p-6 rounded-lg shadow-lg flex flex-col justify-between items-start hover:shadow-xl transition duration-300"
+                key={i}
+                className="bg-white rounded-xl shadow-lg p-6 animate-pulse"
               >
-                <h3 className="text-xl font-semibold text-gray-800">{worker.name}</h3>
-                <p className="text-sm text-gray-600">{worker.service}</p>
-                <p className="text-sm text-gray-500">{worker.address}</p>
-                <p className="text-sm text-gray-500">{worker.description}</p>
-                <p className="text-sm font-semibold text-blue-600">₹ {worker.charge}</p>
-                <button
-                  onClick={() => handleConnectClick(worker)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg mt-4 hover:bg-blue-700 transition duration-300"
-                >
-                  {isAuthenticated ? "Add to Cart" : "Login to Connect"}
-                </button>
+                <div className="flex gap-4">
+                  <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
+                  <div className="flex-1">
+                    <div className="h-6 bg-gray-200 rounded mb-3 w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2 w-1/2"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-4 w-5/6"></div>
+                  </div>
+                </div>
+                <div className="h-20 bg-gray-200 rounded mb-4 mt-4"></div>
+                <div className="flex justify-between">
+                  <div className="h-8 bg-gray-200 rounded w-24"></div>
+                  <div className="h-8 bg-gray-200 rounded w-24"></div>
+                </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {workers.length > 0 ? (
+              workers.map((worker) => (
+                <div
+                  key={worker.id}
+                  className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:translate-y-[-4px]"
+                >
+                  <div className="p-6">
+                    <div className="flex gap-4 items-start">
+                      <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-lg flex items-center justify-center text-white text-xl font-bold">
+                        {worker.firstname?.charAt(0) || "P"}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-gray-900">
+                          {worker.firstname}
+                        </h3>
+                        <div className="flex items-center gap-1 mb-1">
+                          {Array(5)
+                            .fill(0)
+                            .map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${
+                                  i < Math.floor(worker.rating || 4.5)
+                                    ? "text-amber-400 fill-amber-400"
+                                    : "text-gray-300"
+                                }`}
+                              />
+                            ))}
+                          <span className="text-sm text-gray-600 ml-1">
+                            {worker.ratings || 4.5}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <MapPin className="w-4 h-4" />
+                          <span>{worker.address || "Mumbai, India"}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <p className="text-gray-600">
+                        {worker.description ||
+                          "Professional service provider with years of experience in the industry."}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      <span className="px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-medium">
+                        {worker.skill || "Professional"}
+                      </span>
+                      <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium">
+                        Available Today
+                      </span>
+                      <span className="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-xs font-medium">
+                        5+ Years Exp.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-100 px-6 py-4 bg-gray-50 flex justify-between items-center">
+                    <div>
+                      <div className="text-sm text-gray-500">Hourly Rate</div>
+                      <div className="text-xl font-bold text-orange-600">
+                        ₹{worker.charge || "1200"}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleConnectClick(worker)}
+                      className={`px-6 py-3 rounded-lg text-white font-medium transition-all ${
+                        isAuthenticated
+                          ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+                          : "bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600"
+                      }`}
+                    >
+                      {isAuthenticated ? (
+                        <span className="flex items-center gap-2">
+                          <ShoppingCart className="w-5 h-5" />
+                          Hire Now
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <ArrowRightCircle className="w-5 h-5" />
+                          Login to Hire
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="bg-white rounded-xl shadow-lg p-12 text-center col-span-3">
+                <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                  <XCircle className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  No Professionals Found
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Please try again later
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Trust Badges */}
+      <div className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+            Why Choose Our Platform
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-orange-50 rounded-xl p-6 text-center">
+              <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="w-8 h-8 text-orange-500" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                Verified Professionals
+              </h3>
+              <p className="text-gray-600">
+                Every professional undergoes a rigorous verification process
+              </p>
+            </div>
+            <div className="bg-orange-50 rounded-xl p-6 text-center">
+              <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                <Award className="w-8 h-8 text-orange-500" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                Quality Guaranteed
+              </h3>
+              <p className="text-gray-600">
+                Satisfaction guaranteed or we'll make it right
+              </p>
+            </div>
+            <div className="bg-orange-50 rounded-xl p-6 text-center">
+              <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                <Clock className="w-8 h-8 text-orange-500" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                On-time Service
+              </h3>
+              <p className="text-gray-600">
+                Professional arrive on schedule or you get a discount
+              </p>
+            </div>
           </div>
         </div>
       </div>
