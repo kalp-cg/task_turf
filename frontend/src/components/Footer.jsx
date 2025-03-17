@@ -10,7 +10,7 @@ const Footer = () => {
         <a href="#" className="text-gray-400 hover:text-white transition duration-300"><FaInstagram /></a>
         <a href="#" className="text-gray-400 hover:text-white transition duration-300"><FaLinkedin /></a>
       </div>
-      <p className="text-gray-400">&copy; 2025 Aapki. All rights reserved.</p>
+      <p className="text-gray-400">&copy; 2025 TaskTurf. All rights reserved.</p>
       <div className="mt-4">
         <a href="#" className="text-gray-400 hover:text-white transition duration-300 mx-2">Privacy Policy</a>
         <a href="#" className="text-gray-400 hover:text-white transition duration-300 mx-2">Terms of Service</a>
