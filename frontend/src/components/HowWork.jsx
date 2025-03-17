@@ -1,135 +1,143 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  Rocket, 
+  Users, 
+  CheckCircle, 
+  ShieldCheck,
+  CreditCard, 
+  MessageCircle, 
+  Wrench, // Replaced Tools with Wrench
+  Settings 
+} from 'lucide-react';
 
 const HowWork = () => {
   const navigate = useNavigate();
 
   const handleSignUpClick = () => {
-    navigate('/register'); // Redirect to the registration page
+    navigate('/register');
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen py-12">
-      {/* Header Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900">How TaskTurf Works</h1>
-          <p className="mt-4 text-lg text-gray-600">
-            A simple and seamless way for users and workers to connect and get things done.
+    <div className="bg-gradient-to-b from-orange-50 to-white min-h-screen">
+      {/* Hero Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+        <div className="text-center">
+          <h1 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-pink-500 mb-6">
+            Your Tasks, Simplified
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+            Connect with trusted professionals in minutes - seamless, secure, and smart
           </p>
         </div>
+      </div>
 
-        {/* Steps Section */}
+      {/* Process Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-white">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Step 1 */}
-          <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4">
-              <span className="text-3xl font-bold text-white">1</span>
+          <div className="relative p-6 bg-gradient-to-b from-orange-50 to-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+              <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
+                <Rocket className="w-10 h-10 text-white" />
+              </div>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Post a Task</h3>
-            <p className="text-gray-600">
-              Describe the task you need help with and post it on TaskTurf. Include details like location, budget, and timeline.
+            <h3 className="text-2xl font-semibold text-gray-900 mt-12 mb-4">Post Your Task</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Create a detailed task listing with requirements, budget, and timeline. Our smart system matches you with qualified professionals instantly.
             </p>
           </div>
 
           {/* Step 2 */}
-          <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mb-4">
-              <span className="text-3xl font-bold text-white">2</span>
+          <div className="relative p-6 bg-gradient-to-b from-orange-50 to-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+              <div className="w-20 h-20 bg-gradient-to-br from-pink-400 to-purple-400 rounded-full flex items-center justify-center">
+                <Users className="w-10 h-10 text-white" />
+              </div>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Find Workers</h3>
-            <p className="text-gray-600">
-              Browse through a list of skilled workers who match your task requirements. View their profiles, ratings, and reviews.
+            <h3 className="text-2xl font-semibold text-gray-900 mt-12 mb-4">Choose Your Pro</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Browse verified profiles, compare ratings, and view portfolios. Chat directly with professionals to find your perfect match.
             </p>
           </div>
 
           {/* Step 3 */}
-          <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-            <div className="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mb-4">
-              <span className="text-3xl font-bold text-white">3</span>
+          <div className="relative p-6 bg-gradient-to-b from-orange-50 to-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-indigo-400 rounded-full flex items-center justify-center">
+                <CheckCircle className="w-10 h-10 text-white" />
+              </div>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Hire and Collaborate</h3>
-            <p className="text-gray-600">
-              Contact the worker of your choice, finalize the details, and collaborate to get the job done efficiently.
+            <h3 className="text-2xl font-semibold text-gray-900 mt-12 mb-4">Get It Done</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Track progress in real-time, make secure payments, and rate your experience. We handle the logistics so you focus on results.
             </p>
           </div>
         </div>
+      </div>
 
-        {/* Why Choose TaskTurf Section */}
-        <div className="mt-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Why Choose TaskTurf?</h2>
-            <p className="mt-4 text-lg text-gray-600">
-              TaskTurf offers a unique platform that connects users with skilled workers effortlessly.
-            </p>
+      {/* Features Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gradient-to-r from-orange-50 to-pink-50">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-pink-500">
+            Why TaskTurf Shines
+          </h2>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Feature 1 */}
+          <div className="p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-400 rounded-lg mb-4 flex items-center justify-center">
+              <ShieldCheck className="w-6 h-6 text-white" />
+            </div>
+            <h4 className="text-lg font-semibold text-gray-900 mb-2">100% Secure</h4>
+            <p className="text-gray-600 text-sm">Protected payments and verified identities</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Feature 1 */}
-            <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-              <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Verified Workers</h3>
-              <p className="text-gray-600">
-                All workers on TaskTurf are verified to ensure trust and reliability.
-              </p>
+          {/* Feature 2 */}
+          <div className="p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-purple-400 rounded-lg mb-4 flex items-center justify-center">
+              <CreditCard className="w-6 h-6 text-white" />
             </div>
+            <h4 className="text-lg font-semibold text-gray-900 mb-2">Transparent Pricing</h4>
+            <p className="text-gray-600 text-sm">No hidden fees - pay only for completed work</p>
+          </div>
 
-            {/* Feature 2 */}
-            <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-              <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Wide Range of Services</h3>
-              <p className="text-gray-600">
-                From home repairs to digital tasks, find the right worker for any job.
-              </p>
+          {/* Feature 3 */}
+          <div className="p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-indigo-400 rounded-lg mb-4 flex items-center justify-center">
+              <MessageCircle className="w-6 h-6 text-white" />
             </div>
+            <h4 className="text-lg font-semibold text-gray-900 mb-2">24/7 Support</h4>
+            <p className="text-gray-600 text-sm">Dedicated support team always available</p>
+          </div>
 
-            {/* Feature 3 */}
-            <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-              <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Secure Payments</h3>
-              <p className="text-gray-600">
-                Enjoy secure and hassle-free payments with our integrated payment system.
-              </p>
+          {/* Feature 4 */}
+          <div className="p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-blue-400 rounded-lg mb-4 flex items-center justify-center">
+              <Wrench className="w-6 h-6 text-white" />
             </div>
-
-            {/* Feature 4 */}
-            <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-              <div className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Customer Support</h3>
-              <p className="text-gray-600">
-                Our dedicated support team is here to help you with any issues or questions.
-              </p>
-            </div>
+            <h4 className="text-lg font-semibold text-gray-900 mb-2">Smart Matching</h4>
+            <p className="text-gray-600 text-sm">AI-powered task-professional matching</p>
           </div>
         </div>
+      </div>
 
-        {/* Call to Action Section */}
-        <div className="mt-16 text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Ready to Get Started?</h2>
-          <p className="mt-4 text-lg text-gray-600">
-            Join TaskTurf today and experience the easiest way to get things done.
+      {/* CTA Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 bg-gradient-to-b from-orange-50 to-white">
+        <div className="text-center">
+          <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-pink-500 mb-6">
+            Ready to Transform Your Tasks?
+          </h2>
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+            Join thousands of users who've found trusted professionals for their projects
           </p>
-          <button
+          <button 
             onClick={handleSignUpClick}
-            className="mt-8 px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-300"
+            className="inline-flex items-center px-12 py-4 bg-gradient-to-r from-[#F4A261] to-[#E76F51] text-white font-semibold rounded-full hover:from-[#E76F51] hover:to-[#D95335] transition-all duration-300 shadow-lg hover:shadow-xl"
           >
-            Sign Up Now
+            Get Started Now
+            <Settings className="ml-4 w-6 h-6 animate-pulse" />
           </button>
         </div>
       </div>

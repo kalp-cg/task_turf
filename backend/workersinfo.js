@@ -136,29 +136,47 @@ async function initializeDatabase() {
 app.post("/workers", async (req, res) => {
   try {
     const { firstname, lastname, number, email, address, skill, experience, password, confirm_password } = req.body;
+
+    // Check if all required fields are present
     if (!firstname || !lastname || !number || !email || !address || !skill || !experience || !password || !confirm_password) {
       return res.status(400).json({ message: "All fields are required" });
-    } else if (password !== confirm_password) {
+    }
+
+    // Check if passwords match
+    if (password !== confirm_password) {
       return res.status(400).json({ message: "Password and Confirm Password do not match" });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Set charge dynamically based on experience
+    let charge = experience >= 5 ? 1000 : experience >= 3 ? 800 : 600;
+    
+    // Set ratings dynamically based on experience
+    let ratings = experience >= 5 ? 4.8 : experience >= 3 ? 4.5 : 4.2;
+
     const newWorker = {
-      name: `${firstname} ${lastname}`,
+      firstname,
+      lastname,
+      number,
       email,
-      phone: number,
-      service: skill,
-      charge: 600,
       address,
-      ratings: 4.5,
+      skill,
+      experience,
+      charge,
+      ratings,
       description: `${experience} years of experience in ${skill}`,
       password: hashedPassword,
     };
+
     const result = await workerCollection.insertOne(newWorker);
     res.status(201).json({ message: "Worker added successfully", workerId: result.insertedId });
+
   } catch (err) {
     res.status(500).json({ error: "Error adding worker", message: err.message });
   }
 });
+
 
 // Login Route
 app.post("/login", async (req, res) => {

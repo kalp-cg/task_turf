@@ -1,192 +1,8 @@
-// import React, { useEffect, useState } from "react";
-// import { Link, useNavigate } from "react-router-dom";
-// import { useAuth0 } from "@auth0/auth0-react";
-// import axios from "axios";
-
-// const Header = () => {
-//   const { loginWithRedirect, logout, user, isAuthenticated } = useAuth0();
-//   const navigate = useNavigate();
-//   const [newUserFormVisible, setNewUserFormVisible] = useState(true)
-
-//   // State for mobile menu toggle
-//   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-//   // Safely get the first letter of the email (handle undefined case)
-//   const getFirstLetter = (email) => {
-//     return email ? email.charAt(0).toUpperCase() : "";
-//   };
-
-//   const LoginWithRedirect = async () => {
-//     loginWithRedirect();
-//     getAccessTokenSilently();
-//   };
-
-//   const handleNewUser = async(event) => {
-//     event.preventDefault();
-    
-//   }
-
-//   useEffect(() => {
-//     if (isAuthenticated) {
-//       console.log(user.email);
-//       (async()=>{
-//         try {
-//           const data = await axios.get(`http://localhost:3000/user?email=${user.email}`)
-//           console.log("successfull login ...")
-//         } catch (error) {
-//           if(error.response.data.message == "User not found. Please create a new user."){
-//             setNewUserFormVisible(true)
-//           }
-//         }
-//       })()
-
-//       console.log(user);
-//       //Name, Email, Picture
-//     }
-//   }, [isAuthenticated, localStorage.getItem("hello")]);
-
-//   return (
-//     <>
-//       {
-//         newUserFormVisible && (
-//           <div className="absolute w-full h-full bg-white z-[99999] top-0 left-0 flex justify-center items-center">
-          
-//           <div className="bg-gray-100 p-8 rounded-lg shadow-lg w-[400px] max-w-full">
-//               <h2 className="text-2xl font-bold mb-6 text-center">Fill Out Your Details</h2>
-//               <form id="popupForm" className="space-y-4" onSubmit={handleNewUser}>
-                  
-//                   <div>
-//                       <label htmlFor="experience" className="block text-sm font-medium text-gray-700">Experience (in years)</label>
-//                       <input type="number" id="experience" name="experience" placeholder="e.g., 3" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required />
-//                   </div>
-      
-                  
-//                   <div>
-//                       <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number</label>
-//                       <input type="tel" id="phone" name="phone" placeholder="e.g., +91 1234567890" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required />
-//                   </div>
-      
-                 
-//                   <div>
-//                       <label htmlFor="skills" className="block text-sm font-medium text-gray-700">Skills</label>
-//                       <input type="text" id="skills" name="skills" placeholder="e.g., JavaScript, React, Node.js" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required />
-//                   </div>
-      
-                  
-//                   <div>
-//                       <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
-//                       <textarea id="address" name="address" rows="3" placeholder="e.g., 123 Street, City, Country" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required></textarea>
-//                   </div>
-      
-                  
-//                   <div className="flex justify-center">
-//                       <button type="submit" className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-//                           Submit
-//                       </button>
-//                   </div>
-//               </form>
-//           </div>
-//       </div>
-//         )
-//       }
-//       <header className="bg-gradient-to-r from-[#0D1B2A] to-[#1B263B] shadow-lg p-4 flex justify-between items-center px-8 sticky top-0 z-50">
-//         {/* Logo */}
-//         <h1 className="text-2xl font-extrabold text-white md:text-3xl">
-//           TaskTurf
-//         </h1>
-
-//         {/* Hamburger Menu for Mobile */}
-//         <div className="md:hidden">
-//           <button
-//             onClick={() => setIsMenuOpen(!isMenuOpen)}
-//             className="text-white focus:outline-none"
-//           >
-//             <svg
-//               xmlns="http://www.w3.org/2000/svg"
-//               className="h-6 w-6"
-//               fill="none"
-//               viewBox="0 0 24 24"
-//               stroke="currentColor"
-//             >
-//               <path
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//                 strokeWidth={2}
-//                 d="M4 6h16M4 12h16m-7 6h7"
-//               />
-//             </svg>
-//           </button>
-//         </div>
-
-//         {/* Navigation Links (Hidden on Mobile) */}
-//         <nav
-//           className={`${
-//             isMenuOpen ? "block" : "hidden"
-//           } md:flex space-x-6 absolute md:relative top-16 left-0 w-full md:w-auto bg-[#0D1B2A] md:bg-transparent p-4 md:p-0`}
-//         >
-//           <Link
-//             to="/services"
-//             className="text-white hover:text-yellow-300 transition duration-300 block md:inline"
-//           >
-//             Services
-//           </Link>
-//           <Link
-//             to="/howWork"
-//             className="text-white hover:text-yellow-300 transition duration-300 block md:inline"
-//           >
-//             How Work
-//           </Link>
-//         </nav>
-
-//         {/* Auth Section */}
-//         <div className="flex items-center space-x-4">
-//           {isAuthenticated ? (
-//             <>
-//               {/* Profile Picture Clickable */}
-//               <div
-//                 className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-lg font-bold border border-white cursor-pointer"
-//                 onClick={() => navigate("/profile")}
-//               >
-//                 {getFirstLetter(user?.email)} {/* Safely access user.email */}
-//               </div>
-//               <span className="text-white hidden md:block">{user?.name}</span>{" "}
-//               {/* Safely access user.name */}
-//               <button
-//                 onClick={() => logout({ returnTo: window.location.href })}
-//                 className="border border-white px-4 py-2 rounded-lg text-white hover:bg-white hover:text-[#0D1B2A] transition duration-300"
-//               >
-//                 Logout
-//               </button>
-//             </>
-//           ) : (
-//             <div className="space-x-4">
-//               <button
-//                 onClick={() => navigate("/login")} // Redirect to Login page
-//                 className="border border-white px-6 py-2 rounded-lg text-white hover:bg-white hover:text-[#0D1B2A] transition duration-300 ease-in-out transform hover:scale-105"
-//               >
-//                 Login
-//               </button>
-//               <button
-//                 onClick={() => navigate("/register")} // Redirect to Register page
-//                 className="bg-[#1F4068] text-white px-6 py-2 rounded-lg hover:bg-[#E63946] transition duration-300 ease-in-out transform hover:scale-105"
-//               >
-//                 Register
-//               </button>
-//             </div>
-//           )}
-//         </div>
-//       </header>
-//     </>
-//   );
-// };
-
-// export default Header;
-
-
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
+import { Menu, X, User, LogOut, Home, Briefcase, HelpCircle } from "lucide-react";
 
 const Header = () => {
   const { loginWithRedirect, logout, user, isAuthenticated } = useAuth0();
@@ -202,11 +18,6 @@ const Header = () => {
   // State for mobile menu toggle
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Safely get the first letter of the email (handle undefined case)
-  const getFirstLetter = (email) => {
-    return email ? email.charAt(0).toUpperCase() : "";
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -219,20 +30,19 @@ const Header = () => {
     event.preventDefault();
 
     try {
-      // // Send the form data to the backend
-      // await axios.post("http://localhost:3000/user", {
-      //   email: user.email,
-      //   ...formData,
-      // });
-      // console.log("User data submitted successfully!");
-      // setNewUserFormVisible(false); // Hide the form after successful submission
       const data = await axios.post("http://localhost:3000/user", {
-        name: user.name, email: user.email, picture: user.profile, address: formData.address, experience: formData.experience, phone: formData.phone, skills: formData.skills
-      })
+        name: user.name, 
+        email: user.email, 
+        picture: user.profile, 
+        address: formData.address, 
+        experience: formData.experience, 
+        phone: formData.phone, 
+        skills: formData.skills
+      });
 
-      console.log(data)
-      console.log("successfull")
-      setNewUserFormVisible(false)
+      console.log(data);
+      console.log("successfull");
+      setNewUserFormVisible(false);
     } catch (error) {
       console.error("Error submitting user data:", error);
     }
@@ -240,7 +50,6 @@ const Header = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      console.log(user.email);
       (async () => {
         try {
           const response = await axios.get(
@@ -257,23 +66,39 @@ const Header = () => {
           }
         }
       })();
-      console.log(user);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
+
+  // Get initials for avatar
+  const getInitials = (name) => {
+    if (!name) return "";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+  };
 
   return (
     <>
       {newUserFormVisible && (
-        <div className="absolute w-full h-full bg-white z-[99999] top-0 left-0 flex justify-center items-center">
-          <div className="bg-gray-100 p-8 rounded-lg shadow-lg w-[400px] max-w-full">
-            <h2 className="text-2xl font-bold mb-6 text-center">
-              Fill Out Your Details
-            </h2>
-            <form id="popupForm" className="space-y-4" onSubmit={handleNewUser}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded-xl shadow-2xl w-[400px] max-w-[95%] max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">Complete Your Profile</h2>
+              <button 
+                onClick={() => setNewUserFormVisible(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <form className="space-y-6" onSubmit={handleNewUser}>
               <div>
                 <label
                   htmlFor="experience"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Experience (in years)
                 </label>
@@ -284,7 +109,7 @@ const Header = () => {
                   placeholder="e.g., 3"
                   value={formData.experience}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F4A261] focus:border-transparent outline-none transition"
                   required
                 />
               </div>
@@ -292,7 +117,7 @@ const Header = () => {
               <div>
                 <label
                   htmlFor="phone"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Phone Number
                 </label>
@@ -303,7 +128,7 @@ const Header = () => {
                   placeholder="e.g., +91 1234567890"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F4A261] focus:border-transparent outline-none transition"
                   required
                 />
               </div>
@@ -311,7 +136,7 @@ const Header = () => {
               <div>
                 <label
                   htmlFor="skills"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Skills
                 </label>
@@ -319,10 +144,10 @@ const Header = () => {
                   type="text"
                   id="skills"
                   name="skills"
-                  placeholder="e.g., cleaning , plumbing "
+                  placeholder="e.g., cleaning, plumbing"
                   value={formData.skills}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F4A261] focus:border-transparent outline-none transition"
                   required
                 />
               </div>
@@ -330,7 +155,7 @@ const Header = () => {
               <div>
                 <label
                   htmlFor="address"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Address
                 </label>
@@ -341,109 +166,166 @@ const Header = () => {
                   placeholder="e.g., 123 Street, City, Country"
                   value={formData.address}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F4A261] focus:border-transparent outline-none transition"
                   required
                 ></textarea>
               </div>
 
-              <div className="flex justify-center">
-                <button
-                  type="submit"
-                  className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Submit
-                </button>
-              </div>
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-[#F4A261] to-[#E76F51] text-white py-3 px-4 rounded-lg font-semibold hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F4A261] transition"
+              >
+                Complete Profile
+              </button>
             </form>
           </div>
         </div>
       )}
-      <header className="bg-gradient-to-r from-[#0D1B2A] to-[#1B263B] shadow-lg p-4 flex justify-between items-center px-8 sticky top-0 z-50 ">
-        {/* Logo */}
-        <h1 className="text-2xl font-extrabold text-white md:text-3xl">
-          TaskTurf
-        </h1>
-        {/* Hamburger Menu for Mobile */}
-        <div className="md:hidden">
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-white focus:outline-none"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16m-7 6h7"
-              />
-            </svg>
-          </button>
-        </div>
-       
-        <nav
-          className={`${
-            isMenuOpen ? "block" : "hidden"
-          } md:flex space-x-6 absolute md:relative  left-0 w-full md:w-auto bg-[#0D1B2A] md:bg-transparent p-4 md:p-0`}
-        >
-          <Link
-            to="/services"
-            className="text-white hover:text-yellow-300 transition duration-300 block md:inline "
-          >
-            Services
-          </Link>
-          <Link
-            to="/howWork"
-            className="text-white hover:text-yellow-300 transition duration-300 block md:inline"
-          >
-            How Work
-          </Link>
-        </nav>
-        
+      
+      <header className="bg-[#0D1B2A] shadow-lg sticky top-0 z-40">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <Link to="/" className="flex items-center">
+              <h1 className="text-2xl font-extrabold text-white md:text-3xl">
+                Task<span className="text-[#F4A261]">Turf</span>
+              </h1>
+            </Link>
 
-        <div className="flex items-center space-x-4">
-          {isAuthenticated ? (
-            <>
-              {/* Profile Picture Clickable */}
-              <div
-                className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-lg font-bold border border-white cursor-pointer"
-                onClick={() => navigate("/profile")}
-              >
-                {getFirstLetter(user?.email)} {/* Safely access user.email */}
-              </div>
-              <span className="text-white hidden md:block">
-                {user?.name}
-              </span>{" "}
-              {/* Safely access user.name */}
+            {/* Main Navigation - Desktop */}
+            <nav className="hidden md:flex items-center space-x-8">
+              <Link to="/" className="text-white hover:text-[#F4A261] transition-colors font-medium flex items-center">
+                <Home size={18} className="mr-1" />
+                Home
+              </Link>
+              <Link to="/services" className="text-white hover:text-[#F4A261] transition-colors font-medium flex items-center">
+                <Briefcase size={18} className="mr-1" />
+                Services
+              </Link>
+              <Link to="/howWork" className="text-white hover:text-[#F4A261] transition-colors font-medium flex items-center">
+                <HelpCircle size={18} className="mr-1" />
+                How It Works
+              </Link>
+            </nav>
+
+            {/* Auth Section */}
+            <div className="flex items-center">
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-4">
+                  {/* Profile dropdown */}
+                  <div className="relative group">
+                    <div 
+                      onClick={() => navigate("/profile")}
+                      className="h-10 w-10 rounded-full bg-gradient-to-r from-[#F4A261] to-[#E76F51] flex items-center justify-center text-white font-bold cursor-pointer border-2 border-transparent hover:border-white transition"
+                    >
+                      {getInitials(user?.name)}
+                    </div>
+                    
+                   {/* Dropdown */}
+                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 hidden group-hover:block">
+                      <div className="px-4 py-2 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                      </div>
+                      <Link 
+                        to="/profile" 
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                      >
+                        <User size={16} className="mr-2" />
+                        Profile
+                      </Link>
+                      <button
+                        onClick={() => logout({ returnTo: window.location.origin })}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                      >
+                        <LogOut size={16} className="mr-2" />
+                        Log Out
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => loginWithRedirect()}
+                  className="bg-gradient-to-r from-[#F4A261] to-[#E76F51] text-white py-2 px-4 rounded-lg font-medium hover:shadow-lg transition"
+                >
+                  Log In
+                </button>
+              )}
+
+              {/* Mobile menu button */}
               <button
-                onClick={() => logout({ returnTo: window.location.href })}
-                className="border border-white px-4 py-2 rounded-lg text-white hover:bg-white hover:text-[#0D1B2A] transition duration-300"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="md:hidden ml-4 text-white focus:outline-none"
               >
-                Logout
-              </button>
-            </>
-          ) : (
-            <div className="space-x-4">
-              <button
-                onClick={() => navigate("/login")} // Redirect to Login page
-                className="border border-white px-6 py-2 rounded-lg text-white hover:bg-white hover:text-[#0D1B2A] transition duration-300 ease-in-out transform hover:scale-105"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => navigate("/register")} // Redirect to Register page
-                className="bg-[#1F4068] text-white px-6 py-2 rounded-lg hover:bg-[#E63946] transition duration-300 ease-in-out transform hover:scale-105"
-              >
-                Register
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
-          )}
+          </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-[#0D1B2A] border-t border-[#1E3A5F] py-4">
+            <div className="container mx-auto px-4 flex flex-col space-y-3">
+              <Link 
+                to="/" 
+                className="text-white hover:text-[#F4A261] transition-colors font-medium flex items-center py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Home size={18} className="mr-2" />
+                Home
+              </Link>
+              <Link 
+                to="/services" 
+                className="text-white hover:text-[#F4A261] transition-colors font-medium flex items-center py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Briefcase size={18} className="mr-2" />
+                Services
+              </Link>
+              <Link 
+                to="/howWork" 
+                className="text-white hover:text-[#F4A261] transition-colors font-medium flex items-center py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <HelpCircle size={18} className="mr-2" />
+                How It Works
+              </Link>
+              
+              {isAuthenticated && (
+                <Link 
+                  to="/profile" 
+                  className="text-white hover:text-[#F4A261] transition-colors font-medium flex items-center py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <User size={18} className="mr-2" />
+                  Profile
+                </Link>
+              )}
+              
+              {isAuthenticated ? (
+                <button
+                  onClick={() => {
+                    logout({ returnTo: window.location.origin });
+                    setIsMenuOpen(false);
+                  }}
+                  className="text-white hover:text-[#F4A261] transition-colors font-medium flex items-center py-2"
+                >
+                  <LogOut size={18} className="mr-2" />
+                  Log Out
+                </button>
+              ) : (
+                <button
+                  onClick={() => loginWithRedirect()}
+                  className="text-white hover:text-[#F4A261] transition-colors font-medium flex items-center py-2"
+                >
+                  Log In
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </header>
     </>
   );
