@@ -1,12 +1,16 @@
 import React, { Suspense, lazy } from "react";
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Loader from "./components/Loader.jsx"; 
+import { Toaster } from 'react-hot-toast';
+import { CartProvider } from './contexts/CartContext';
+import { AuthProvider } from './contexts/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
+import { Loader, NetworkStatus } from './components/LoadingStates';
 
 const Home = lazy(() => import("./pages/Home"));
-const WorkersPage = lazy(() => import("./pages/WorkersPage"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
+const WorkersPage = lazy(() => import("./pages/WorkersPage"));
 const Cleaning = lazy(() => import("./pages/Cleaning"));
 const Plumbing = lazy(() => import("./pages/Plumbing"));
 const Electrical = lazy(() => import("./pages/Elecrical.jsx"));
@@ -17,41 +21,134 @@ const Painting = lazy(() => import("./pages/Painting"));
 const Contact = lazy(() => import("./pages/Contact"));
 const HowWork = lazy(() => import("./components/HowWork"));
 const NotFound = lazy(() => import("./pages/NotFound")); 
-const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const Cart = lazy(() => import("./pages/Cart"));
+const Profile = lazy(() => import("./pages/Profile"));
 
 const App = () => {
   return (
-    <Router>
-      <div className="min-h-screen">
-        {/* Suspense for lazy-loaded components with custom loader */}
-        <Suspense fallback={<Loader />}>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/workers" element={<WorkersPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/howWork" element={<HowWork />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/cart" element={<Cart />} />
+    <ErrorBoundary>
+      <AuthProvider>
+        <CartProvider>
+          <Router>
+            <div className="min-h-screen">
+              {/* Network status indicator */}
+              <NetworkStatus />
+              
+              {/* Global toast notifications */}
+              <Toaster 
+                position="top-right"
+                toastOptions={{
+                  duration: 3000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  },
+                  success: {
+                    style: {
+                      background: '#10B981',
+                    },
+                  },
+                  error: {
+                    style: {
+                      background: '#EF4444',
+                    },
+                  },
+                  loading: {
+                    style: {
+                      background: '#F4A261',
+                    },
+                  },
+                }}
+              />
+              
+              {/* Suspense for lazy-loaded components with enhanced loader */}
+              <Suspense fallback={<Loader fullscreen message="Loading page..." />}>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/workers" element={<WorkersPage />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/howWork" element={<HowWork />} />
 
-            {/* Service Routes */}
-            <Route path="/cleaning" element={<Cleaning />} />
-            <Route path="/plumbing" element={<Plumbing />} />
-            <Route path="/electrical" element={<Electrical />} />
-            <Route path="/babysitting" element={<Babysitting />} />
-            <Route path="/gardening" element={<Gardening />} />
-            <Route path="/cooking" element={<Cooking />} />
-            <Route path="/painting" element={<Painting />} />
+                  {/* Service Routes */}
+                  <Route path="/cleaning" element={<Cleaning />} />
+                  <Route path="/plumbing" element={<Plumbing />} />
+                  <Route path="/electrical" element={<Electrical />} />
+                  <Route path="/babysitting" element={<Babysitting />} />
+                  <Route path="/gardening" element={<Gardening />} />
+                  <Route path="/cooking" element={<Cooking />} />
+                  <Route path="/painting" element={<Painting />} />
 
-            {/* Catch-all Route for 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </div>
-    </Router>
+                  {/* Protected Routes - Require Authentication */}
+                  <Route 
+                    path="/profile" 
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/cart" 
+                    element={
+                      <ProtectedRoute>
+                        <Cart />
+                      </ProtectedRoute>
+                    } 
+                  />
+
+                  {/* Admin Only Routes */}
+                  <Route 
+                    path="/admin/*" 
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <div>Admin Panel - Coming Soon</div>
+                      </ProtectedRoute>
+                    } 
+                  />
+
+                  {/* Worker Only Routes */}
+                  <Route 
+                    path="/worker/*" 
+                    element={
+                      <ProtectedRoute allowedRoles={['worker']}>
+                        <div>Worker Dashboard - Coming Soon</div>
+                      </ProtectedRoute>
+                    } 
+                  />
+
+                  {/* User Profile Routes */}
+                  <Route 
+                    path="/profile" 
+                    element={
+                      <ProtectedRoute>
+                        <div>Profile Page - Coming Soon</div>
+                      </ProtectedRoute>
+                    } 
+                  />
+
+                  <Route 
+                    path="/settings" 
+                    element={
+                      <ProtectedRoute>
+                        <div>Settings Page - Coming Soon</div>
+                      </ProtectedRoute>
+                    } 
+                  />
+
+                  {/* Catch-all Route for 404 */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </div>
+          </Router>
+        </CartProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 };
 

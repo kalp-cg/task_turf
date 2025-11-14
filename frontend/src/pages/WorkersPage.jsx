@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
 import {
   Search,
   MapPin,
@@ -20,8 +19,6 @@ const WorkerHub = () => {
   const [workers, setWorkers] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,11 +37,7 @@ const WorkerHub = () => {
   }, []);
 
   const handleConnectClick = (worker) => {
-    if (!isAuthenticated) {
-      loginWithRedirect();
-    } else {
-      addToCart(worker);
-    }
+    addToCart(worker);
   };
 
   const addToCart = (worker) => {
@@ -191,23 +184,12 @@ const WorkerHub = () => {
                     </div>
                     <button
                       onClick={() => handleConnectClick(worker)}
-                      className={`px-6 py-3 rounded-lg text-white font-medium transition-all ${
-                        isAuthenticated
-                          ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
-                          : "bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600"
-                      }`}
+                      className="px-6 py-3 rounded-lg text-white font-medium transition-all bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
                     >
-                      {isAuthenticated ? (
-                        <span className="flex items-center gap-2">
-                          <ShoppingCart className="w-5 h-5" />
-                          Hire Now
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          <ArrowRightCircle className="w-5 h-5" />
-                          Login to Hire
-                        </span>
-                      )}
+                      <span className="flex items-center gap-2">
+                        <ShoppingCart className="w-5 h-5" />
+                        Hire Now
+                      </span>
                     </button>
                   </div>
                 </div>
