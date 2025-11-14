@@ -1,0 +1,8 @@
+Connecting to MongoDB...
+✅ Connected to MongoDB database: taskturf
+🚀 TaskTurf API Server running on port 8080
+📍 Environment: development
+🔗 Health check: http://localhost:8080/health
+📊 Legacy endpoints: http://localhost:8080/workers
+SIGTERM received, shutting down gracefully
+📴 MongoDB connection closed
