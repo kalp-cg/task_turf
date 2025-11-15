@@ -335,7 +335,225 @@ router.get('/trending/popular', async (req, res) => {
   }
 });
 
-// Rate a service (Public endpoint)
+// Get workers available for a specific service type with enhanced details
+router.get('/:serviceType/workers', async (req, res) => {
+  try {
+    const { serviceType } = req.params;
+    const { location, date, minRating, maxPrice, sortBy } = req.query;
+    const db = database.getDb();
+    const usersCollection = db.collection('users');
+
+    // Build query filter for workers
+    let filter = { 
+      role: 'worker',
+      skills: { $regex: serviceType, $options: 'i' },
+      isAvailable: { $ne: false }
+    };
+
+    if (location) {
+      filter.address = { $regex: location, $options: 'i' };
+    }
+
+    if (minRating) {
+      filter.rating = { $gte: parseFloat(minRating) };
+    }
+
+    if (maxPrice) {
+      filter.hourlyRate = { $lte: parseInt(maxPrice) };
+    }
+
+    // Build sort options
+    let sortOptions = {};
+    switch (sortBy) {
+      case 'rating':
+        sortOptions = { rating: -1, experience: -1 };
+        break;
+      case 'price_low':
+        sortOptions = { hourlyRate: 1 };
+        break;
+      case 'price_high':
+        sortOptions = { hourlyRate: -1 };
+        break;
+      case 'experience':
+        sortOptions = { experience: -1 };
+        break;
+      default:
+        sortOptions = { rating: -1, completedJobs: -1 };
+    }
+
+    const workers = await usersCollection
+      .find(filter, { projection: { password: 0 } })
+      .sort(sortOptions)
+      .toArray();
+
+    // Enhance worker data with availability and reviews
+    const enhancedWorkers = workers.map(worker => ({
+      ...worker,
+      serviceType,
+      isAvailableForDate: date ? true : true, // For now, assume all workers are available
+      responseTime: `${Math.floor(Math.random() * 30) + 10} minutes`,
+      completionRate: `${Math.floor(worker.rating * 20)}%`,
+      profileImage: worker.profileImage || `https://ui-avatars.com/api/?name=${worker.firstName}+${worker.lastName}&background=random`,
+      badges: [
+        ...(worker.experience >= 5 ? ['Expert'] : []),
+        ...(worker.rating >= 4.7 ? ['Top Rated'] : []),
+        ...(worker.completedJobs >= 50 ? ['Trusted Pro'] : [])
+      ],
+      availability: {
+        today: Math.random() > 0.3,
+        tomorrow: Math.random() > 0.2,
+        thisWeek: true
+      }
+    }));
+
+    res.status(200).json({
+      success: true,
+      serviceType,
+      count: enhancedWorkers.length,
+      location: location || 'All locations',
+      workers: enhancedWorkers
+    });
+
+  } catch (error) {
+    console.error('Error fetching workers for service:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching available workers'
+    });
+  }
+});
+
+// Create a service booking with multi-stage flow
+router.post('/:serviceType/book', async (req, res) => {
+  try {
+    const { serviceType } = req.params;
+    const { 
+      stage, // 1: location/details, 2: worker selection, 3: confirmation
+      bookingData 
+    } = req.body;
+
+    const db = database.getDb();
+    const bookingsCollection = db.collection('bookings');
+    const usersCollection = db.collection('users');
+
+    switch (stage) {
+      case 1:
+        // Stage 1: Save location and basic details
+        const { location, description, urgency, budget, userId } = bookingData;
+        
+        const booking = {
+          userId: userId ? new ObjectId(userId) : null,
+          serviceType,
+          location,
+          description,
+          urgency: urgency || 'standard',
+          budget: parseInt(budget),
+          stage: 1,
+          status: 'draft',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        const result = await bookingsCollection.insertOne(booking);
+
+        res.status(201).json({
+          success: true,
+          message: 'Booking details saved',
+          bookingId: result.insertedId,
+          nextStage: 2
+        });
+        break;
+
+      case 2:
+        // Stage 2: Worker selection and scheduling
+        const { bookingId, workerId, preferredDate, preferredTime, additionalNotes } = bookingData;
+
+        // Verify worker availability
+        const worker = await usersCollection.findOne({ 
+          _id: new ObjectId(workerId), 
+          role: 'worker',
+          skills: { $regex: serviceType, $options: 'i' }
+        });
+
+        if (!worker) {
+          return res.status(404).json({
+            success: false,
+            message: 'Selected worker not available'
+          });
+        }
+
+        // Update booking with worker and schedule details
+        await bookingsCollection.updateOne(
+          { _id: new ObjectId(bookingId) },
+          {
+            $set: {
+              workerId: new ObjectId(workerId),
+              workerName: `${worker.firstName} ${worker.lastName}`,
+              preferredDate: new Date(preferredDate),
+              preferredTime,
+              additionalNotes,
+              estimatedPrice: worker.hourlyRate,
+              stage: 2,
+              status: 'pending_worker_confirmation',
+              updatedAt: new Date()
+            }
+          }
+        );
+
+        res.status(200).json({
+          success: true,
+          message: 'Worker selected, awaiting confirmation',
+          worker: {
+            id: worker._id,
+            name: `${worker.firstName} ${worker.lastName}`,
+            rating: worker.rating,
+            hourlyRate: worker.hourlyRate
+          },
+          nextStage: 3
+        });
+        break;
+
+      case 3:
+        // Stage 3: Final confirmation and payment
+        const { bookingId: finalBookingId, paymentMethod, contactNumber } = bookingData;
+
+        await bookingsCollection.updateOne(
+          { _id: new ObjectId(finalBookingId) },
+          {
+            $set: {
+              paymentMethod,
+              contactNumber,
+              stage: 3,
+              status: 'confirmed',
+              confirmedAt: new Date(),
+              updatedAt: new Date()
+            }
+          }
+        );
+
+        // Here you would typically send notification to worker
+        res.status(200).json({
+          success: true,
+          message: 'Booking confirmed! Worker will be notified.',
+          bookingId: finalBookingId
+        });
+        break;
+
+      default:
+        res.status(400).json({
+          success: false,
+          message: 'Invalid booking stage'
+        });
+    }
+
+  } catch (error) {
+    console.error('Error processing booking:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error processing booking'
+    });
+  }
+});
 router.post('/:id/rate', validateObjectId('id'), async (req, res) => {
   try {
     const { rating, review, userId, userName } = req.body;

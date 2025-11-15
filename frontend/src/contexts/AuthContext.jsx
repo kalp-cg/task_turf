@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 const AuthContext = createContext();
 
 // Configure axios defaults
-const API_BASE_URL = 'https://task-turf-6.onrender.com';
 axios.defaults.baseURL = API_BASE_URL;
 
 // Add token to requests automatically
@@ -68,8 +68,14 @@ export const AuthProvider = ({ children }) => {
           setUser(JSON.parse(savedUser));
           setIsAuthenticated(true);
           
-          // Verify token is still valid
-          await axios.get('/api/auth/verify');
+          // Verify token is still valid by getting current user
+          const response = await axios.get('/api/auth/me');
+          // Update user data if response contains updated info
+          if (response.data.data.user) {
+            const updatedUser = response.data.data.user;
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            setUser(updatedUser);
+          }
         } catch (error) {
           // Token invalid, clear auth data
           localStorage.removeItem('accessToken');
@@ -199,6 +205,30 @@ export const AuthProvider = ({ children }) => {
     return user?.role === role;
   };
 
+  // Get role-specific redirect path
+  const getRoleRedirectPath = (userRole) => {
+    switch (userRole) {
+      case 'admin':
+        return '/admin';
+      case 'worker':
+        return '/worker';
+      case 'user':
+        return '/dashboard';
+      default:
+        return '/';
+    }
+  };
+
+  // Login with redirect
+  const loginWithRedirect = async (email, password) => {
+    const result = await login(email, password);
+    if (result.success) {
+      const redirectPath = getRoleRedirectPath(result.user.role);
+      window.location.href = redirectPath;
+    }
+    return result;
+  };
+
   // Check if user has any of the specified roles
   const hasAnyRole = (roles) => {
     return roles.includes(user?.role);
@@ -216,12 +246,14 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     register,
     login,
+    loginWithRedirect,
     logout,
     updateProfile,
     changePassword,
     hasRole,
     hasAnyRole,
-    getDisplayName
+    getDisplayName,
+    getRoleRedirectPath
   };
 
   return (

@@ -9,10 +9,17 @@
     "init-db": "node utils/init-db.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["taskturf", "service", "worker", "marketplace", "api"],
+  "keywords": [
+    "taskturf",
+    "service",
+    "worker",
+    "marketplace",
+    "api"
+  ],
   "author": "TaskTurf Team",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.13.2",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

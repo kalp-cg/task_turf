@@ -6,105 +6,63 @@ const { validateBooking, validateBookingUpdate } = require('../middleware/valida
 
 const router = express.Router();
 
-// Create new booking (User only) - Enhanced for frontend modal
-router.post('/', validateBooking, async (req, res) => {
+// Create new booking from frontend (simplified flow)
+router.post('/frontend', async (req, res) => {
   try {
     const { 
-      userId = new ObjectId(), // Default to new ObjectId if not provided
-      serviceId,
-      workerId,
-      serviceType, 
-      urgency = 'standard',
+      service,
+      address,
+      date,
+      time,
       description,
-      scheduledDate,
-      scheduledTime,
-      duration,
-      contactInfo,
-      serviceAddress,
-      specialInstructions
+      userDetails,
+      workerId,
+      estimatedCost
     } = req.body;
 
     const db = database.getDb();
     const bookingsCollection = db.collection('bookings');
-    const workersCollection = db.collection('workers');
-    const servicesCollection = db.collection('services');
+    const usersCollection = db.collection('users');
+    const notificationsCollection = db.collection('notifications');
 
-    // Get service details for pricing
-    let basePrice = 0;
-    let serviceName = serviceType;
-    
-    if (serviceId) {
-      const service = await servicesCollection.findOne({ _id: new ObjectId(serviceId) });
-      if (service) {
-        basePrice = service.basePrice;
-        serviceName = service.name;
-      }
-    }
+    // Verify worker exists and is available
+    const worker = await usersCollection.findOne({ 
+      _id: new ObjectId(workerId), 
+      role: 'worker',
+      isAvailable: { $ne: false }
+    });
 
-    // Verify worker if specified
-    let assignedWorker = null;
-    if (workerId) {
-      assignedWorker = await workersCollection.findOne({ 
-        _id: new ObjectId(workerId), 
-        isAvailable: true 
+    if (!worker) {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker not found or not available'
       });
-
-      if (!assignedWorker) {
-        return res.status(404).json({
-          success: false,
-          message: 'Selected worker not found or not available'
-        });
-      }
-      
-      // Use worker's charge if no service price
-      if (!basePrice) {
-        basePrice = assignedWorker.charge;
-      }
     }
-
-    // Calculate total amount based on urgency
-    const urgencyMultipliers = {
-      'urgent': 1.5,
-      'standard': 1.0,
-      'flexible': 0.9
-    };
-    
-    const finalAmount = Math.round(basePrice * (urgencyMultipliers[urgency] || 1.0));
 
     // Create booking
     const newBooking = {
-      userId: userId ? new ObjectId(userId) : new ObjectId(),
-      serviceId: serviceId ? new ObjectId(serviceId) : null,
-      workerId: workerId ? new ObjectId(workerId) : null,
+      service,
+      serviceType: service,
+      workerId: new ObjectId(workerId),
+      workerName: `${worker.firstName} ${worker.lastName}`,
       
-      // Service details
-      serviceName,
-      serviceType,
-      urgency,
-      description: description || '',
-      
-      // Scheduling
-      scheduledDate: new Date(scheduledDate),
-      scheduledTime,
-      duration: duration || '1-2 hours',
-      
-      // Contact and location
-      contactInfo: {
-        name: contactInfo?.name || 'Anonymous User',
-        email: contactInfo?.email || 'user@example.com',
-        phone: contactInfo?.phone || '',
+      // User details
+      userDetails: {
+        name: userDetails.name,
+        phone: userDetails.phone,
+        email: userDetails.email
       },
-      serviceAddress,
-      specialInstructions: specialInstructions || '',
       
-      // Pricing
-      basePrice,
-      urgencyMultiplier: urgencyMultipliers[urgency],
-      finalAmount,
+      // Booking details
+      address,
+      date: new Date(date),
+      time,
+      description,
+      estimatedCost: estimatedCost || worker.hourlyRate * 2,
       
-      // Status tracking
-      status: workerId ? 'pending' : 'looking_for_worker', // pending, accepted, rejected, completed, cancelled, looking_for_worker
-      paymentStatus: 'pending', // pending, paid, refunded
+      // Status
+      status: 'pending', // Waiting for worker to accept/reject
+      paymentStatus: 'pending',
       
       // Timestamps
       createdAt: new Date(),
@@ -113,24 +71,163 @@ router.post('/', validateBooking, async (req, res) => {
 
     const result = await bookingsCollection.insertOne(newBooking);
 
-    // If worker is assigned, send notification (placeholder)
-    if (assignedWorker) {
-      // TODO: Implement push notification/email to worker
-      console.log(`Booking request sent to worker: ${assignedWorker.email}`);
+    // Create notification for worker
+    const notification = {
+      recipientId: new ObjectId(workerId),
+      type: 'booking_request',
+      title: `New ${service} booking request`,
+      message: `You have a new booking request from ${userDetails.name}`,
+      data: {
+        bookingId: result.insertedId,
+        service,
+        address,
+        date,
+        time,
+        customerName: userDetails.name,
+        customerPhone: userDetails.phone,
+        estimatedCost: newBooking.estimatedCost
+      },
+      isRead: false,
+      createdAt: new Date()
+    };
+
+    await notificationsCollection.insertOne(notification);
+
+    res.status(201).json({
+      success: true,
+      message: 'Booking request sent successfully! The worker will be notified.',
+      bookingId: result.insertedId,
+      data: newBooking
+    });
+
+  } catch (error) {
+    console.error('Frontend booking creation error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating booking request'
+    });
+  }
+});
+
+// Create new booking (User only) - Enhanced for frontend modal
+router.post('/', validateBooking, async (req, res) => {
+  try {
+    const { 
+      userId,
+      serviceType, 
+      description,
+      preferredDate,
+      budget,
+      location,
+      urgency = 'standard',
+      workerId // Optional: if user selects a specific worker
+    } = req.body;
+
+    const db = database.getDb();
+    const bookingsCollection = db.collection('bookings');
+    const usersCollection = db.collection('users');
+
+    // Verify user exists
+    if (userId) {
+      const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
     }
+
+    // Find available workers for the service type
+    let assignedWorkerId = null;
+    let estimatedPrice = parseInt(budget) || 500;
+
+    if (workerId) {
+      // User selected specific worker
+      const selectedWorker = await usersCollection.findOne({ 
+        _id: new ObjectId(workerId), 
+        role: 'worker',
+        isAvailable: { $ne: false },
+        skills: { $regex: serviceType, $options: 'i' }
+      });
+
+      if (!selectedWorker) {
+        return res.status(404).json({
+          success: false,
+          message: 'Selected worker not found or not available for this service'
+        });
+      }
+      
+      assignedWorkerId = new ObjectId(workerId);
+      estimatedPrice = selectedWorker.hourlyRate || estimatedPrice;
+    } else {
+      // Auto-assign best available worker
+      const availableWorkers = await usersCollection
+        .find({ 
+          role: 'worker',
+          skills: { $regex: serviceType, $options: 'i' },
+          isAvailable: { $ne: false },
+          hourlyRate: { $lte: estimatedPrice * 1.2 } // Within budget range
+        })
+        .sort({ rating: -1, experience: -1 })
+        .limit(1)
+        .toArray();
+
+      if (availableWorkers.length > 0) {
+        assignedWorkerId = availableWorkers[0]._id;
+        estimatedPrice = availableWorkers[0].hourlyRate;
+      }
+    }
+
+    // Create booking
+    const newBooking = {
+      userId: userId ? new ObjectId(userId) : null,
+      workerId: assignedWorkerId,
+      
+      // Service details
+      serviceType,
+      description: description || '',
+      urgency,
+      
+      // Scheduling
+      preferredDate: new Date(preferredDate),
+      scheduledDate: new Date(preferredDate),
+      
+      // Location and pricing
+      location: location || 'Not specified',
+      estimatedPrice,
+      finalAmount: estimatedPrice,
+      budget: parseInt(budget) || estimatedPrice,
+      
+      // Status and timestamps
+      status: assignedWorkerId ? 'pending' : 'looking_for_worker',
+      paymentStatus: 'pending',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      
+      // Additional info
+      customerNotes: description,
+      isUrgent: urgency === 'urgent'
+    };
+
+    const result = await bookingsCollection.insertOne(newBooking);
+
+    // Respond with booking details
+    const responseData = {
+      bookingId: result.insertedId,
+      ...newBooking,
+      workerAssigned: !!assignedWorkerId,
+      message: assignedWorkerId ? 'Booking created and worker assigned' : 'Booking created, looking for available worker'
+    };
 
     res.status(201).json({
       success: true,
       message: 'Booking created successfully',
-      bookingId: result.insertedId,
-      booking: {
-        ...newBooking,
-        _id: result.insertedId
-      }
+      data: responseData
     });
 
   } catch (error) {
-    console.error('Error creating booking:', error);
+    console.error('Booking creation error:', error);
     res.status(500).json({
       success: false,
       message: 'Error creating booking'
@@ -336,6 +433,118 @@ router.get('/:id', validateObjectId('id'), async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching booking details'
+    });
+  }
+});
+
+// Worker response to booking request (accept/reject)
+router.patch('/:bookingId/respond', validateObjectId('bookingId'), async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const { action, workerId, message } = req.body; // action: 'accept' or 'reject'
+
+    if (!['accept', 'reject'].includes(action)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Action must be either "accept" or "reject"'
+      });
+    }
+
+    const db = database.getDb();
+    const bookingsCollection = db.collection('bookings');
+    const notificationsCollection = db.collection('notifications');
+
+    // Get the booking
+    const booking = await bookingsCollection.findOne({
+      _id: new ObjectId(bookingId),
+      workerId: new ObjectId(workerId),
+      status: 'pending'
+    });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found or already responded to'
+      });
+    }
+
+    let updateData = {
+      status: action === 'accept' ? 'accepted' : 'rejected',
+      workerResponse: {
+        action,
+        message: message || '',
+        respondedAt: new Date()
+      },
+      updatedAt: new Date()
+    };
+
+    if (action === 'accept') {
+      updateData.acceptedAt = new Date();
+    } else {
+      updateData.rejectedAt = new Date();
+    }
+
+    // Update booking status
+    await bookingsCollection.updateOne(
+      { _id: new ObjectId(bookingId) },
+      { $set: updateData }
+    );
+
+    // Mark the notification as read
+    await notificationsCollection.updateOne(
+      { 
+        'data.bookingId': new ObjectId(bookingId),
+        recipientId: new ObjectId(workerId)
+      },
+      { 
+        $set: { 
+          isRead: true, 
+          readAt: new Date() 
+        } 
+      }
+    );
+
+    // Create notification for customer (if we have customer contact)
+    if (booking.userDetails && booking.userDetails.email) {
+      const customerNotification = {
+        type: 'booking_response',
+        title: action === 'accept' ? 'Booking Accepted!' : 'Booking Declined',
+        message: action === 'accept' 
+          ? `${booking.workerName} has accepted your booking request!`
+          : `${booking.workerName} has declined your booking request.`,
+        data: {
+          bookingId: booking._id,
+          action,
+          workerMessage: message,
+          service: booking.service
+        },
+        customerEmail: booking.userDetails.email,
+        customerPhone: booking.userDetails.phone,
+        isRead: false,
+        createdAt: new Date()
+      };
+
+      await notificationsCollection.insertOne(customerNotification);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Booking ${action}ed successfully`,
+      booking: {
+        id: booking._id,
+        status: updateData.status,
+        customerName: booking.userDetails?.name,
+        service: booking.service,
+        date: booking.date,
+        time: booking.time
+      }
+    });
+
+  } catch (error) {
+    console.error('Error responding to booking:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error processing booking response'
     });
   }
 });

@@ -13,7 +13,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, getRoleRedirectPath } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,7 +37,9 @@ const Login = () => {
       
       if (result.success) {
         toast.success(`Welcome back, ${result.user.firstName}!`);
-        navigate(from, { replace: true });
+        
+        // Keep users on home page instead of redirecting to dashboard
+        navigate('/', { replace: true });
       } else {
         toast.error(result.error);
       }

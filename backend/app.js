@@ -12,6 +12,7 @@ const workerRoutes = require('./routes/workers');
 const bookingRoutes = require('./routes/bookings');
 const serviceRoutes = require('./routes/services');
 const profileRoutes = require('./routes/profile');
+const notificationRoutes = require('./routes/notifications');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -63,6 +64,7 @@ app.use('/api/workers', workerRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

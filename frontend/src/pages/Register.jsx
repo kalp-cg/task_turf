@@ -24,7 +24,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { register } = useAuth();
+  const { register, getRoleRedirectPath } = useAuth();
   const navigate = useNavigate();
 
   const serviceOptions = [
@@ -108,6 +108,8 @@ const Register = () => {
       
       if (result.success) {
         toast.success('Account created successfully! Welcome to TaskTurf!');
+        
+        // Keep users on home page after registration
         navigate('/');
       } else {
         toast.error(result.error);

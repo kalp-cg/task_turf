@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -12,6 +11,8 @@ const authRoutes = require('./routes/auth');
 const workerRoutes = require('./routes/workers');
 const bookingRoutes = require('./routes/bookings');
 const serviceRoutes = require('./routes/services');
+const dashboardRoutes = require('./routes/dashboard');
+const paymentRoutes = require('./routes/payments');
 
 // Import authentication middleware
 const { optionalAuth, authenticateToken, authorizeRoles } = require('./middleware/auth');
@@ -67,6 +68,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/workers', optionalAuth, workerRoutes);
 app.use('/api/bookings', authenticateToken, bookingRoutes);
 app.use('/api/services', optionalAuth, serviceRoutes);
+app.use('/api/dashboard', authenticateToken, dashboardRoutes);
+app.use('/api/payments', authenticateToken, paymentRoutes);
+app.use('/api/notifications', require('./routes/notifications')); // Remove auth for worker dashboard
 
 // Legacy endpoints for backward compatibility (with optional auth)
 app.get('/workers', optionalAuth, async (req, res) => {

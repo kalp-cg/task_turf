@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { useAuth } from "../contexts/AuthContext";
@@ -12,15 +12,38 @@ import {
   User, 
   LogOut, 
   Settings,
-  Shield
+  Shield,
+  Bell
 } from "lucide-react";
+import axios from 'axios';
 
 const Header = () => {
   const { totalItems } = useCart();
   const { isAuthenticated, user, logout, hasRole, getDisplayName } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const navigate = useNavigate();
+
+  // Fetch notification count for workers
+  useEffect(() => {
+    if (isAuthenticated && hasRole('worker') && user?.id) {
+      const fetchNotificationCount = async () => {
+        try {
+          const response = await axios.get(`http://localhost:5000/api/notifications/${user.id}/pending`);
+          setNotificationCount(response.data.length);
+        } catch (error) {
+          console.error('Error fetching notification count:', error);
+        }
+      };
+      
+      fetchNotificationCount();
+      // Set up polling for real-time updates
+      const interval = setInterval(fetchNotificationCount, 10000); // Check every 10 seconds
+      
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated, hasRole, user?.id]);
 
   const navigationItems = [
     { name: "Home", href: "/", icon: Home },
@@ -45,7 +68,23 @@ const Header = () => {
     roleBasedItems.push({ name: "Admin Panel", href: "/admin", icon: Shield });
   }
   if (isAuthenticated && hasRole('worker')) {
-    roleBasedItems.push({ name: "My Jobs", href: "/worker/jobs", icon: Briefcase });
+    roleBasedItems.push({ name: "Dashboard", href: "/worker", icon: Briefcase });
+  }
+  if (isAuthenticated && hasRole('user')) {
+    roleBasedItems.push({ name: "Dashboard", href: "/dashboard", icon: Briefcase });
+  }
+
+  const getRoleBadgeColor = () => {
+    if (!user?.role) return 'bg-gray-100 text-gray-800';
+    switch (user.role) {
+      case 'admin': return 'bg-red-100 text-red-800';
+      case 'worker': return 'bg-blue-100 text-blue-800';
+      case 'user': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+  if (isAuthenticated && hasRole('user')) {
+    roleBasedItems.push({ name: "My Bookings", href: "/dashboard", icon: Briefcase });
   }
 
   const handleLogout = async () => {
@@ -109,6 +148,21 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center space-x-4">
+            {/* Notification Bell for Workers */}
+            {isAuthenticated && hasRole('worker') && (
+              <Link
+                to="/worker-dashboard"
+                className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors duration-200"
+              >
+                <Bell size={20} />
+                {notificationCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {notificationCount > 9 ? '9+' : notificationCount}
+                  </span>
+                )}
+              </Link>
+            )}
+
             {/* Cart Icon */}
             <Link
               to="/cart"
@@ -144,8 +198,44 @@ const Header = () => {
                     <div className="px-4 py-2 border-b border-gray-100">
                       <p className="text-sm font-medium text-gray-900">{getDisplayName()}</p>
                       <p className="text-xs text-gray-500">{user?.email}</p>
-                      <p className="text-xs text-blue-600 capitalize">{user?.role}</p>
+                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium capitalize ${getRoleBadgeColor()}`}>
+                        {user?.role}
+                      </span>
                     </div>
+                    
+                    {/* Role-specific dashboard link */}
+                    {hasRole('admin') && (
+                      <Link
+                        to="/admin"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                      >
+                        <Shield className="mr-3 h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    
+                    {hasRole('worker') && (
+                      <Link
+                        to="/worker-dashboard"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                      >
+                        <Briefcase className="mr-3 h-4 w-4" />
+                        Worker Dashboard
+                      </Link>
+                    )}
+                    
+                    {hasRole('user') && (
+                      <Link
+                        to="/dashboard"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                      >
+                        <Briefcase className="mr-3 h-4 w-4" />
+                        My Dashboard
+                      </Link>
+                    )}
                     
                     <Link
                       to="/profile"
@@ -164,17 +254,6 @@ const Header = () => {
                       <Settings className="mr-3 h-4 w-4" />
                       Settings
                     </Link>
-                    
-                    {hasRole('admin') && (
-                      <Link
-                        to="/admin"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsProfileMenuOpen(false)}
-                      >
-                        <Shield className="mr-3 h-4 w-4" />
-                        Admin Panel
-                      </Link>
-                    )}
                     
                     <button
                       onClick={handleLogout}

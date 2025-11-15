@@ -24,12 +24,20 @@ const WorkerHub = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("https://task-turf-6.onrender.com/workers");
+        const res = await axios.get("http://localhost:5000/api/workers");
         console.log("Backend Response:", res.data); // Log the response
-        setWorkers(res.data);
+        
+        // Check if the API response has the expected structure
+        if (res.data.success && res.data.workers) {
+          setWorkers(res.data.workers);
+        } else {
+          console.error("Unexpected API response structure:", res.data);
+          setWorkers([]);
+        }
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching workers:", error);
+        setWorkers([]);
         setIsLoading(false);
       }
     };
@@ -41,7 +49,8 @@ const WorkerHub = () => {
   };
 
   const addToCart = (worker) => {
-    if (!cartItems.some((item) => item.id === worker.id)) {
+    const workerId = worker._id || worker.id;
+    if (!cartItems.some((item) => (item._id || item.id) === workerId)) {
       setCartItems([...cartItems, worker]);
     }
   };
@@ -119,17 +128,17 @@ const WorkerHub = () => {
             {workers.length > 0 ? (
               workers.map((worker) => (
                 <div
-                  key={worker.id}
+                  key={worker._id || worker.id}
                   className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:translate-y-[-4px]"
                 >
                   <div className="p-6">
                     <div className="flex gap-4 items-start">
                       <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-lg flex items-center justify-center text-white text-xl font-bold">
-                        {worker.firstname?.charAt(0) || "P"}
+                        {worker.firstName?.charAt(0) || worker.firstname?.charAt(0) || "P"}
                       </div>
                       <div className="flex-1">
                         <h3 className="text-xl font-bold text-gray-900">
-                          {worker.firstname}
+                          {worker.firstName || worker.firstname || "Professional"}
                         </h3>
                         <div className="flex items-center gap-1 mb-1">
                           {Array(5)
@@ -145,7 +154,7 @@ const WorkerHub = () => {
                               />
                             ))}
                           <span className="text-sm text-gray-600 ml-1">
-                            {worker.ratings || 4.5}
+                            {worker.rating || 4.5}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -163,15 +172,33 @@ const WorkerHub = () => {
                     </div>
 
                     <div className="flex flex-wrap gap-2 mt-4">
-                      <span className="px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-medium">
-                        {worker.skill || "Professional"}
-                      </span>
-                      <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium">
-                        Available Today
-                      </span>
-                      <span className="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-xs font-medium">
-                        5+ Years Exp.
-                      </span>
+                      {/* Handle skills array properly */}
+                      {worker.skills && Array.isArray(worker.skills) ? (
+                        worker.skills.slice(0, 2).map((skill, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-medium"
+                          >
+                            {skill}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-medium">
+                          {worker.skill || "Professional"}
+                        </span>
+                      )}
+                      
+                      {worker.isAvailable !== false && (
+                        <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium">
+                          Available Today
+                        </span>
+                      )}
+                      
+                      {worker.experience && (
+                        <span className="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-xs font-medium">
+                          {worker.experience}+ Years Exp.
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -179,7 +206,7 @@ const WorkerHub = () => {
                     <div>
                       <div className="text-sm text-gray-500">Hourly Rate</div>
                       <div className="text-xl font-bold text-orange-600">
-                        ₹{worker.charge || "1200"}
+                        ₹{worker.hourlyRate || worker.charge || "1200"}
                       </div>
                     </div>
                     <button

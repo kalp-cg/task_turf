@@ -47,7 +47,7 @@ const ProfilePage = () => {
       try {
         if (!user?.email) throw new Error("User email is not available.");
         
-        const response = await axios.get(`https://task-turf-6.onrender.com/user?email=${user.email}`);
+        const response = await axios.get(`http://localhost:5000/api/user?email=${user.email}`);
         const userData = response.data;
         
         setProfileData({
@@ -183,10 +183,10 @@ const ProfilePage = () => {
       
       if (profileData.userId) {
         // Update existing user
-        await axios.put(`https://task-turf-6.onrender.com/user/${profileData.userId}`, updatedData);
+        await axios.put(`http://localhost:5000/api/user/${profileData.userId}`, updatedData);
       } else {
         // Create new user
-        const response = await axios.post("https://task-turf-6.onrender.com/user", updatedData);
+        const response = await axios.post("http://localhost:5000/api/user", updatedData);
         setProfileData(prev => ({ ...prev, userId: response.data._id }));
       }
       

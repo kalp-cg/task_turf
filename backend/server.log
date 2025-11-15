@@ -1,8 +1,18 @@
+nohup: ignoring input
 Connecting to MongoDB...
 ✅ Connected to MongoDB database: taskturf
-🚀 TaskTurf API Server running on port 8080
+🚀 TaskTurf API Server running on port 5000
 📍 Environment: development
-🔗 Health check: http://localhost:8080/health
-📊 Legacy endpoints: http://localhost:8080/workers
-SIGTERM received, shutting down gracefully
-📴 MongoDB connection closed
+🔗 Health check: http://localhost:5000/health
+📊 Legacy endpoints: http://localhost:5000/workers
+[0mGET /api/services/cleaning/workers [32m200[0m 344.763 ms - 11896[0m
+[0mGET /api/services/cleaning/workers [32m200[0m 237.672 ms - 11893[0m
+[0mGET /api/auth/me [36m304[0m 213.484 ms - -[0m
+[0mGET /api/auth/me [36m304[0m 204.715 ms - -[0m
+[0mGET /api/auth/me [36m304[0m 255.882 ms - -[0m
+[0mGET /api/auth/me [36m304[0m 175.834 ms - -[0m
+[0mGET /api/auth/me [36m304[0m 278.022 ms - -[0m
+[0mGET /api/auth/me [36m304[0m 204.218 ms - -[0m
+[0mGET /api/auth/me [36m304[0m 260.546 ms - -[0m
+[0mGET /api/auth/me [36m304[0m 91.888 ms - -[0m
+[0mGET /api/services/cleaning/workers [32m200[0m 250.980 ms - 11893[0m

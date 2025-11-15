@@ -23,6 +23,8 @@ const HowWork = lazy(() => import("./components/HowWork"));
 const NotFound = lazy(() => import("./pages/NotFound")); 
 const Cart = lazy(() => import("./pages/Cart"));
 const Profile = lazy(() => import("./pages/Profile"));
+const RoleBasedDashboard = lazy(() => import("./components/RoleBasedDashboard"));
+const WorkerDashboard = lazy(() => import("./pages/WorkerDashboard"));
 
 const App = () => {
   return (
@@ -85,6 +87,14 @@ const App = () => {
 
                   {/* Protected Routes - Require Authentication */}
                   <Route 
+                    path="/dashboard" 
+                    element={
+                      <ProtectedRoute>
+                        <RoleBasedDashboard />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
                     path="/profile" 
                     element={
                       <ProtectedRoute>
@@ -101,41 +111,38 @@ const App = () => {
                     } 
                   />
 
-                  {/* Admin Only Routes */}
+                  {/* Admin Dashboard */}
                   <Route 
-                    path="/admin/*" 
+                    path="/admin" 
                     element={
                       <ProtectedRoute allowedRoles={['admin']}>
-                        <div>Admin Panel - Coming Soon</div>
+                        <RoleBasedDashboard />
                       </ProtectedRoute>
                     } 
                   />
 
-                  {/* Worker Only Routes */}
+                  {/* Worker Dashboard */}
                   <Route 
-                    path="/worker/*" 
+                    path="/worker-dashboard" 
+                    element={<WorkerDashboard />} 
+                  />
+
+                  {/* Worker Dashboard */}
+                  <Route 
+                    path="/worker" 
                     element={
                       <ProtectedRoute allowedRoles={['worker']}>
-                        <div>Worker Dashboard - Coming Soon</div>
+                        <RoleBasedDashboard />
                       </ProtectedRoute>
                     } 
                   />
 
-                  {/* User Profile Routes */}
+                  {/* User Dashboard */}
                   <Route 
-                    path="/profile" 
+                    path="/user" 
                     element={
-                      <ProtectedRoute>
-                        <div>Profile Page - Coming Soon</div>
-                      </ProtectedRoute>
-                    } 
-                  />
-
-                  <Route 
-                    path="/settings" 
-                    element={
-                      <ProtectedRoute>
-                        <div>Settings Page - Coming Soon</div>
+                      <ProtectedRoute allowedRoles={['user']}>
+                        <RoleBasedDashboard />
                       </ProtectedRoute>
                     } 
                   />

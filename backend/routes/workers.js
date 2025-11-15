@@ -9,15 +9,18 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const db = database.getDb();
-    const workersCollection = db.collection('workers');
+    const usersCollection = db.collection('users');
     
     const { service, location, minRating, maxCharge, sortBy } = req.query;
     
-    // Build query filter
-    let filter = { isAvailable: true };
+    // Build query filter - get users with role 'worker'
+    let filter = { 
+      role: 'worker', 
+      isAvailable: { $ne: false } // Include workers where isAvailable is not explicitly false
+    };
     
     if (service) {
-      filter.skill = { $regex: service, $options: 'i' };
+      filter.skills = { $regex: service, $options: 'i' };
     }
     
     if (location) {
@@ -25,24 +28,24 @@ router.get('/', async (req, res) => {
     }
     
     if (minRating) {
-      filter.ratings = { $gte: parseFloat(minRating) };
+      filter.rating = { $gte: parseFloat(minRating) };
     }
     
     if (maxCharge) {
-      filter.charge = { $lte: parseInt(maxCharge) };
+      filter.hourlyRate = { $lte: parseInt(maxCharge) };
     }
 
     // Build sort options
     let sortOptions = {};
     switch (sortBy) {
       case 'rating':
-        sortOptions = { ratings: -1 };
+        sortOptions = { rating: -1 };
         break;
       case 'price_low':
-        sortOptions = { charge: 1 };
+        sortOptions = { hourlyRate: 1 };
         break;
       case 'price_high':
-        sortOptions = { charge: -1 };
+        sortOptions = { hourlyRate: -1 };
         break;
       case 'experience':
         sortOptions = { experience: -1 };
@@ -51,7 +54,7 @@ router.get('/', async (req, res) => {
         sortOptions = { createdAt: -1 };
     }
 
-    const workers = await workersCollection
+    const workers = await usersCollection
       .find(filter, { projection: { password: 0 } })
       .sort(sortOptions)
       .toArray();
@@ -75,10 +78,13 @@ router.get('/', async (req, res) => {
 router.get('/:id', validateObjectId('id'), async (req, res) => {
   try {
     const db = database.getDb();
-    const workersCollection = db.collection('workers');
+    const usersCollection = db.collection('users');
     
-    const worker = await workersCollection.findOne(
-      { _id: new ObjectId(req.params.id) },
+    const worker = await usersCollection.findOne(
+      { 
+        _id: new ObjectId(req.params.id),
+        role: 'worker'
+      },
       { projection: { password: 0 } }
     );
 
@@ -107,33 +113,94 @@ router.get('/:id', validateObjectId('id'), async (req, res) => {
 router.get('/service/:serviceType', async (req, res) => {
   try {
     const { serviceType } = req.params;
-    const { location } = req.query;
+    const { location, sortBy, minRating, maxPrice, date, time } = req.query;
     const db = database.getDb();
-    const workersCollection = db.collection('workers');
+    const usersCollection = db.collection('users');
+    const bookingsCollection = db.collection('bookings');
 
     let filter = { 
-      skill: { $regex: serviceType, $options: 'i' },
-      isAvailable: true 
+      role: 'worker',
+      skills: { $regex: serviceType, $options: 'i' },
+      isAvailable: { $ne: false }
     };
 
     if (location) {
       filter.address = { $regex: location, $options: 'i' };
     }
 
-    const workers = await workersCollection
+    if (minRating) {
+      filter.rating = { $gte: parseFloat(minRating) };
+    }
+
+    if (maxPrice) {
+      filter.hourlyRate = { $lte: parseInt(maxPrice) };
+    }
+
+    // If date and time provided, exclude workers who already have bookings at that slot
+    if (date && time) {
+      try {
+        // Find bookings on the given date with matching time and active status
+        const start = new Date(date);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(date);
+        end.setHours(23, 59, 59, 999);
+
+        const conflictedBookings = await bookingsCollection.find({
+          date: { $gte: start, $lte: end },
+          time: time,
+          status: { $in: ['pending', 'accepted', 'in_progress'] },
+          workerId: { $exists: true, $ne: null }
+        }, { projection: { workerId: 1 } }).toArray();
+
+        const conflictedWorkerIds = conflictedBookings
+          .map(b => b.workerId)
+          .filter(Boolean)
+          .map(id => (typeof id === 'object' && id._bsontype === 'ObjectID') ? id : new ObjectId(id));
+
+        if (conflictedWorkerIds.length > 0) {
+          filter._id = { $nin: conflictedWorkerIds };
+        }
+      } catch (err) {
+        console.error('Error checking worker schedule conflicts:', err);
+        // don't fail the whole request, just proceed without conflict filtering
+      }
+    }
+
+    // Build sort options
+    let sortOptions = {};
+    switch (sortBy) {
+      case 'rating':
+        sortOptions = { rating: -1, experience: -1 };
+        break;
+      case 'price_low':
+        sortOptions = { hourlyRate: 1 };
+        break;
+      case 'price_high':
+        sortOptions = { hourlyRate: -1 };
+        break;
+      case 'experience':
+        sortOptions = { experience: -1, rating: -1 };
+        break;
+      default:
+        sortOptions = { rating: -1, experience: -1 };
+    }
+
+    const workers = await usersCollection
       .find(filter, { projection: { password: 0 } })
-      .sort({ ratings: -1, experience: -1 })
+      .sort(sortOptions)
       .toArray();
 
     if (workers.length === 0) {
       return res.status(404).json({
         success: false,
-        message: `No workers found for service: ${serviceType}${location ? ` in ${location}` : ''}`
+        message: `No workers found for service: ${serviceType}${location ? ` in ${location}` : ''}`,
+        workers: []
       });
     }
 
     res.status(200).json({
       success: true,
+      serviceType,
       count: workers.length,
       workers
     });
@@ -152,9 +219,9 @@ router.put('/profile/:workerId', async (req, res) => {
   try {
     const { workerId } = req.params;
     const db = database.getDb();
-    const workersCollection = db.collection('workers');
+    const usersCollection = db.collection('users');
     
-    const allowedUpdates = ['firstname', 'lastname', 'phone', 'address', 'skill', 'experience', 'isAvailable'];
+    const allowedUpdates = ['firstName', 'lastName', 'phone', 'address', 'skills', 'experience', 'isAvailable', 'hourlyRate'];
     const updates = {};
     
     // Filter allowed updates
@@ -164,18 +231,20 @@ router.put('/profile/:workerId', async (req, res) => {
       }
     });
 
-    // Recalculate charge and ratings if experience is updated
+    // Update rating based on experience if experience is updated
     if (updates.experience) {
       const experience = parseInt(updates.experience);
-      updates.charge = experience >= 5 ? 1000 : experience >= 3 ? 800 : 600;
-      updates.ratings = experience >= 5 ? 4.8 : experience >= 3 ? 4.5 : 4.2;
-      updates.description = `${experience} years of experience in ${updates.skill || 'various services'}`;
+      updates.rating = experience >= 7 ? 4.8 : experience >= 4 ? 4.5 : 4.2;
+      updates.description = `${experience} years of experience in ${Array.isArray(updates.skills) ? updates.skills.join(', ') : 'various services'}`;
     }
 
     updates.updatedAt = new Date();
 
-    const result = await workersCollection.updateOne(
-      { _id: new ObjectId(workerId) },
+    const result = await usersCollection.updateOne(
+      { 
+        _id: new ObjectId(workerId),
+        role: 'worker'
+      },
       { $set: updates }
     );
 
@@ -205,12 +274,15 @@ router.patch('/availability/:workerId', async (req, res) => {
   try {
     const { workerId } = req.params;
     const db = database.getDb();
-    const workersCollection = db.collection('workers');
+    const usersCollection = db.collection('users');
     
     const { isAvailable } = req.body;
 
-    const result = await workersCollection.updateOne(
-      { _id: new ObjectId(workerId) },
+    const result = await usersCollection.updateOne(
+      { 
+        _id: new ObjectId(workerId),
+        role: 'worker'
+      },
       { 
         $set: { 
           isAvailable: Boolean(isAvailable),
