@@ -4,7 +4,7 @@ import axios from 'axios';
 const AuthContext = createContext();
 
 // Configure axios defaults
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'https://task-turf-6.onrender.com';
 axios.defaults.baseURL = API_BASE_URL;
 
 // Add token to requests automatically

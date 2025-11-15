@@ -24,7 +24,7 @@ const WorkerHub = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/workers");
+        const res = await axios.get("https://task-turf-6.onrender.com/workers");
         console.log("Backend Response:", res.data); // Log the response
         setWorkers(res.data);
         setIsLoading(false);
